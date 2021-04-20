@@ -5,8 +5,9 @@
 	-- Confirm Password 
 	-- POST Data goes into redis through Django
 	SCHEMA
-	-- user ({Email, Phone, Password, Token, Verification_Code, alias, location, Trackers, email_verified, data:{last_login:, last_update}})
+	-- user ({Email, Phone, Password, Token, Verification_Code, alias, Location, Trackers, email_verified, last_update}})
 	PROCESS
+	-- Verify Exists (Redis serch) idx_users
 	-- Verify Email, Phone, password and confirm password
 	-- Create verify link
 	-- Hash Password
@@ -20,6 +21,7 @@
 	-- Change Verify code
 	-- Set Email Verified to true
 	-- Redirect to login
+
 -- Login
 	-- Phone
 	-- Email
@@ -30,7 +32,8 @@
 	-- Check if email is verified
 	-- Set alias
 	-- update last_login
-	-- Respond with User data
+	-- Respond with User data ( Redis search ) idx_token
+
 -- Forgot password
 	-- Phone
 	-- Email
@@ -39,6 +42,7 @@
 	-- Create Verification_code
 	-- Create Temp_password
 	-- Send email
+
 -- Reset password
 	-- Phone
 	-- Email
@@ -59,4 +63,32 @@
 	-- Tracker
 	-- update data
 	-- Respond with new data
+
+-- Delete tracker
+	-- Phone
+	-- Email
+	-- Token
+	-- Tracker
+	-- update data
+	-- Respond with new data
+
+-- Invite user
+	-- Email of invitee
+	-- Phone of invitee
+	-- send mail
+
+-- Filter user
+	-- select user to be kept
+	-- Fe fuctionality
+
+-- Search/Locate user
+	-- Redis search 
+
+-- In App Webrtc call
+	-- Pub sub
+	-- SSE from Front end
+
+-- Location
+	-- Redis serch on all users with tracker as me ( idx:tracker)
+	-- resond with location
 	
