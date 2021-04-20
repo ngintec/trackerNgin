@@ -91,4 +91,6 @@
 -- Location
 	-- Redis serch on all users with tracker as me ( idx:tracker)
 	-- resond with location
+	-- GET will get locations of all users that iam the tracker for
+	-- POST will post my last location
 	
