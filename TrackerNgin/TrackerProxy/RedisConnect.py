@@ -20,7 +20,7 @@ users_idx=Client('idx:users')
 #FT.CREATE idx:token ON hash PREFIX 1 "users:" SCHEMA Token TEXT SORTABLE trackers TEXT SORTABLE
 #this is used to send tokens to logged in users
 token_idx=Client('idx:token')
-#FT.CREATE idx:trackers ON hash PREFIX 1 "users:" SCHEMA phone TEXT SORTABLE SCHEMA alias TEXT SORTABLE SCHEMA trackers TEXT SORTABLE location TEXT SORTABLE
+#FT.CREATE idx:trackers ON hash PREFIX 1 "users:" SCHEMA phone TEXT SORTABLE alias TEXT SORTABLE  trackers TEXT SORTABLE location TEXT SORTABLE
 # this is to search the hashes for all users who have tracker as me to be added in Locations(GET) api
 trackers_idx=Client('idx:trackers')
 ###############################
@@ -53,7 +53,7 @@ def Register_Users(user_data):
         user_data['phone']=key
         user_data['alias']=""
         user_data['email_verified']="False"
-        user_data['Trackers']="[]"
+        user_data['Trackers']=""
         user_data['Location']="[]"
         user_data['Token']=GenerateToken(64)
         user_data['last_update']= str(timezone.now())
@@ -190,7 +190,28 @@ def DeleteTracker(user_data):
 
 
 
+def UpdateLocation(user_data):
+    phone=user_data['id']
+    location=user_data['location']
 
+    RedisClient.hset("users:{}".format(phone),key='Location',value=str(location))
+    #GEO ADD to tracked key on fetch not here
+    return "update Success", True
+
+
+def GetLocations(phone):
+    import ast
+    result=trackers_idx.search(phone)
+    allusers=[]
+    for row in result.docs:
+        user=row.__dict__
+        if user["Location"] != "[]":
+            allusers.append({"location": ast.literal_eval(user["Location"]), "alias": user["alias"], "from": user["phone"]})
+    #need to restric the number of elements sent to front end 
+    #what if 500 users to 1 tracker??? UI will be clumsy
+    #GEO ADD can be added here for finding nearest entity
+    #use case emegency help
+    return allusers, True
 
     
 

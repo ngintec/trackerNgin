@@ -19,7 +19,7 @@ logger.addHandler(c_handler)
 
 class Users(APIView):
 
-		def create(self, request):
+		def put(self, request):
 			try:
 				request_origin = request.META['HTTP_ORIGIN']
 				# validate the input
@@ -27,27 +27,28 @@ class Users(APIView):
 				status, message = ValidateInput(user_data)
 				# if succes take action
 				if not status:
-					return JsonResponse(response,status=400)
+					return Response(response,status=400)
 				#entries into redis
 				message, status= RedisConnect.Register_Users(user_data)
 				#Check if user registration failed
 				if not status:
 					#else respond with error
 					response = { "message" : "Could not register", "Reason": message}
-					return JsonResponse(response,status=400)
+					return Response(response,status=400)
 				#Send mail to confirm email id
 				message, status= SendRegisterMail(message['email'],message['Verification_Code'],message['phone'],request_origin)
 				#Check if some thing happens during email sending
 				if not status:
 					RedisConnect.Clear_User(user_data)
 					response = { "message" : "Could not register", "Reason": message}
-					return JsonResponse(response,status=400)
+					return Response(response,status=400)
 				else:
 					response = { "message" : "Registration Success, Please verify your email before Logging in( Check Yor Email, including Junk Folder )"}
-					return JsonResponse(response)
+					return Response(response)
 			except:
+				logger.error("Some Exception occured in Register user",exc_info=True)
 				pass
-				return JsonResponse({"message":"Internal Server Error", "Reason":"Technical Error"},status=500)
+				return Response({"message":"Internal Server Error", "Reason":"Technical Error"},status=500)
 
 		def post(self, request):
 			try:
@@ -56,19 +57,20 @@ class Users(APIView):
 				message, status = RedisConnect.Login_Users(user_data)
 				if not status:
 					response = { "message" : message}
-					return JsonResponse(response,status=400)
+					return Response(response,status=400)
 				#set the alias as sent in login form
 				return_reponse= message
 				message, status = RedisConnect.UpdateAlias(user_data)
 				if not status:
 					response = { "message" : "Login Failed", "Reason": message}
-					return JsonResponse(response,status=400)
+					return Response(response,status=400)
 				#add alias here on success
 				return_reponse['alias']=user_data['alias']
-				return JsonResponse(return_reponse)
+				return Response(return_reponse)
 			except:
+				logger.error("Some Exception occured in Logging user",exc_info=True)
 				pass
-				return JsonResponse({"message":"Internal Server Error", "Reason":"Technical Error"},status=500)
+				return Response({"message":"Internal Server Error", "Reason":"Technical Error"},status=500)
 
 
 class VerifyEmail(APIView):
@@ -85,8 +87,9 @@ class VerifyEmail(APIView):
 			else:
 				return HttpResponseRedirect("/tracker?action=failure")
 		except:
+			logger.error("Some Exception occured in Verify Email",exc_info=True)
 			pass
-			return JsonResponse({"message":"Internal Server Error", "Reason":"Technical Error"},status=500)
+			return Response({"message":"Internal Server Error", "Reason":"Technical Error"},status=500)
 
 
 class ResetPassword(APIView):
@@ -107,68 +110,123 @@ class ResetPassword(APIView):
 			else:
 				return Response({"message": "Password Change failure", "Reason": message}, status=400)
 		except:
+			logger.error("Some Exception occured in Reset Password",exc_info=True)
 			pass
 			return Response({"message":"Internal Server Error", "Reason":"Technical Error"},status=500)
 
 class ForgotPassword(APIView):
 
 	def post(self, request):
-		user_data= request.data
+		try:
+			user_data= request.data
 
-		message, result= RedisConnect.UpdateForgottenPassword(user_data)
-		if not result:
-			return Response({"message": "Some thing went Wrong", "Reason": message}, status=400)
+			message, result= RedisConnect.UpdateForgottenPassword(user_data)
+			if not result:
+				return Response({"message": "Some thing went Wrong", "Reason": message}, status=400)
 
-		message, result= SendTempPassword(message, user_data['email'])
-		if result:
-			return Response({"message": "Please Check your email for temporary password(Including Junk Folder)"})
-		else:
-			return Response({"message": "Some thing went Wrong", "Reason": message}, status=400)
+			message, result= SendTempPassword(message, user_data['email'])
+			if result:
+				return Response({"message": "Please Check your email for temporary password(Including Junk Folder)"})
+			else:
+				return Response({"message": "Some thing went Wrong", "Reason": message}, status=400)
+		except:
+			logger.error("Some Exception occured in Forgot password",exc_info=True)
+			pass
+			return Response({"message":"Internal Server Error", "Reason":"Technical Error"},status=500)
 
 
 class Trackers(APIView):
 	permission_classes=[LoggedIn]
 
 	def post(self, request):
-		user_data= request.data
-		# i dont send the id here so reat from authenticated header
-		user_data['id']= request.headers['id']
-		if user_data['id'] == user_data['Tracker']:
-			return Response({"message": "You cannot be your own tracker", "Reason": "Not Allowed"}, status=400)
+		try:
+			user_data= request.data
+			# i dont send the id here so reat from authenticated header
+			user_data['id']= request.headers['id']
+			if user_data['id'] == user_data['Tracker']:
+				return Response({"message": "You cannot be your own tracker", "Reason": "Not Allowed"}, status=400)
 
-		message, trackers, result= RedisConnect.AddTracker(user_data)
-		if not result:
-			return Response({"message": "Some thing went Wrong", "Reason": message}, status=400)
-	
-		return Response({"message": message, "Trackers": trackers})
+			message, trackers, result= RedisConnect.AddTracker(user_data)
+			if not result:
+				return Response({"message": "Some thing went Wrong", "Reason": message}, status=400)
+		
+			return Response({"message": message, "Trackers": trackers})
+		except:
+			logger.error("Some Exception occured in Addind Tracker",exc_info=True)
+			pass
+			return Response({"message":"Internal Server Error", "Reason":"Technical Error"},status=500)
+
 
 	def delete(self, request):
-		user_data= request.data
-		# i dont send the id here so reat from authenticated header
-		user_data['id']= request.headers['id']
-		if user_data['id'] == user_data['Tracker']:
-			return Response({"message": "You cannot be your own tracker", "Reason": "Not Allowed"}, status=400)
+		try:
+			user_data= request.data
+			# i dont send the id here so reat from authenticated header
+			user_data['id']= request.headers['id']
+			if user_data['id'] == user_data['Tracker']:
+				return Response({"message": "You cannot be your own tracker", "Reason": "Not Allowed"}, status=400)
 
-		message, trackers, result= RedisConnect.DeleteTracker(user_data)
-		if not result:
-			return Response({"message": "Some thing went Wrong", "Reason": message}, status=400)
-	
-		return Response({"message": message, "Trackers": trackers})
+			message, trackers, result= RedisConnect.DeleteTracker(user_data)
+			if not result:
+				return Response({"message": "Some thing went Wrong", "Reason": message}, status=400)
+		
+			return Response({"message": message, "Trackers": trackers})
+		except:
+			logger.error("Some Exception occured in Deleting Tracker",exc_info=True)
+			pass
+			return Response({"message":"Internal Server Error", "Reason":"Technical Error"},status=500)
+
 
 
 class Invite(APIView):
 	permission_classes=[LoggedIn]
 
 	def post(self, request):
-		request_origin = request.META['HTTP_ORIGIN']
-		user_data= request.data
+		try:
+			request_origin = request.META['HTTP_ORIGIN']
+			user_data= request.data
 
-		message, result= SendInviteMails(user_data['inviter'],user_data['email'], request_origin)
-		if not result:
-			return Response({"message": "Some thing went Wrong", "Reason": message}, status=400)
+			message, result= SendInviteMails(user_data['inviter'],user_data['email'], request_origin)
+			if not result:
+				return Response({"message": "Some thing went Wrong", "Reason": message}, status=400)
 
-		return Response({"message": "Invite email has been sent on your behalf"})
+			return Response({"message": "Invite email has been sent on your behalf"})
+		except:
+			logger.error("Some Exception occured in Sending Invite to user",exc_info=True)
+			pass
+			return Response({"message":"Internal Server Error", "Reason":"Technical Error"},status=500)
+
 
 #todo
 #Logout = change the token??
-#Location 
+
+class Location(APIView):
+	permission_classes=[LoggedIn]
+
+	def post(self, request):
+		try:
+			user_data= request.data
+			user_data['id']= request.headers['id']
+
+			message, result= RedisConnect.UpdateLocation(user_data)
+			if not result:
+				return Response({"message": "Some thing went Wrong", "Reason": message}, status=400)
+			return Response({"message": message})
+		except:
+			logger.error("Some Exception occured in Updating Location",exc_info=True)
+			pass
+			return Response({"message":"Internal Server Error", "Reason":"Technical Error"},status=500)
+
+	def get(self, request):
+		try:
+
+			message, result= RedisConnect.GetLocations(request.headers['id'])
+			if not result:
+				return Response({"message": "Some thing went Wrong", "Reason": message}, status=400)
+			return Response({"message": message})
+		except:
+			logger.error("Some Exception occured in Updating Location",exc_info=True)
+			pass
+			return Response({"message":"Internal Server Error", "Reason":"Technical Error"},status=500)
+
+
+

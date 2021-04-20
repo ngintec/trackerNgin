@@ -1,0 +1,312 @@
+body {
+	font-size: 20px;
+	font-family: sans-serif !important;
+	display: inline;
+	margin: 0px !important;
+}
+.bg-light {
+  background-color: #ffffff!important;
+}
+
+/*Nav br styling*/
+.bg-dark {
+  background-color: #343a40;
+  color: white;
+} 
+.navbar {
+	font-size: 16px;
+	display: flex;
+	position: fixed;
+	height: 60px;
+	width: 100%;
+	top: 0;
+	z-index: 1000;
+}
+.navbar-nav {
+	display: flex;
+}
+.navbar li {
+	list-style-type: none;
+}
+
+.navbar-collapse {
+	position: fixed;
+	right: 5px;
+	text-align: right;
+  margin-block-start: 0.5em;
+}
+
+@media (max-width: 500px ){
+    .navbar-nav {
+      top: 60px;
+      display: none;
+      position: fixed;
+      left: 0;
+      width: 50%;
+      padding-left: 0;
+      margin-top: 0;
+      border: 1px solid white;
+      background-color: #343a40;
+      color: white;
+    }
+    .dropdown-toggle {
+      height: 2em;
+      margin-block-start: 1em;
+      border-bottom: 1px solid white
+    }
+    .dropdown-menu {
+      position: fixed;
+      left: 50%;
+      top: 90px;
+      width: 50%;
+    }
+
+    .dropdown-item {
+      border-bottom: 1px solid white;
+      padding: 16px;
+    }
+    ul.centering {
+      position: fixed;
+      right:5px;
+    }
+    .centering .nav-link, .navbar-brand .nav-link {
+      padding-left: 0px;
+      padding-right: 0px;
+    }
+    .showmenu {
+      display: block !important;
+    }
+  }
+
+ul.centering {
+  padding-block-start: 0.5em;
+}
+
+li.navbar-brand {
+	font-size: 20px;
+  padding-block-start: 1em;
+}
+
+li a {
+  color: white;
+  padding: 8px 16px;
+  text-decoration: none;
+}
+li a.active {
+  border: 1px solid #fff;
+  color: white;
+}
+li a:hover:not(.active) {
+  border: 1px solid #fff;
+  color: white;
+}
+li.dropdown-toggle:hover .dropdown-menu {
+  display: grid;
+}
+.dropdown-menu {
+	background-color: #343a40!important;
+	border-bottom: 1px solid white !important;
+	border-radius: 0px !important;
+	color: white !important;
+	margin-top: 5px;
+	display: none;
+}
+
+
+/*Start swith on navber for tracking*/
+.switch {
+  position: relative;
+  display: inline-block;
+  width: 70px;
+  height: 1em;
+}
+.switch input { 
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+.slider {
+  position: absolute;
+  cursor: pointer;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: #000;
+  -webkit-transition: .4s;
+  transition: .4s;
+  padding-left: 4px;
+}
+.slider:before {
+  position: absolute;
+  content: "";
+  height: 0.9em;
+  width: 33px;
+  left: 4px;
+  bottom: 0.05em;
+  background-color: white;
+  -webkit-transition: .4s;
+  transition: .4s;
+}
+input:checked + .slider {
+  background-color: #2196F3;
+}
+input:focus + .slider {
+  box-shadow: 0 0 1px #2196F3;
+}
+input:checked + .slider:before {
+  -webkit-transform: translateX(33px);
+  -ms-transform: translateX(33px);
+  transform: translateX(33px);
+}
+/* End of tracking with on navbar*/
+/*END NAVBAR*/
+
+
+/* The Modal (background) */
+.modal {
+  display: none; /* Hidden by default */
+  position: fixed; /* Stay in place */
+  z-index: 1000; /* Sit on top */
+  left: 0;
+  top: 0;
+  width: 100%; /* Full width */
+  height: 100%; /* Full height */
+  overflow: auto; /* Enable scroll if needed */
+  background-color: rgb(0,0,0); /* Fallback color */
+  background-color: rgba(0,0,0,0.4); /* Black w/ opacity */
+}
+/* Modal Content/Box */
+.modal-content {
+  background-color: #fefefe;
+  margin: 15% auto; /* 15% from the top and centered */
+  padding: 0px;
+  border: 1px solid #888;
+  width: 35%; /* Could be more or less, depending on screen size */
+}
+@media (max-width: 500px ){
+  .modal-content {
+  background-color: #fefefe;
+  margin: 15% auto; /* 15% from the top and centered */
+  padding: 0px;
+  border: 1px solid #888;
+  width: 90%; /* Could be more or less, depending on screen size */
+}
+  }
+h3, h5 {
+	margin: 0px;	
+}
+.modal-header {
+	border-bottom: 1px solid #000;
+ 	height: 1em;
+  	display: flex;
+  	background-color: green;
+  	color: white;
+  	padding: 10px;
+}
+.modal-title {
+	width: 90%;
+}
+.show {
+	display: block !important;
+}
+.hide {
+	display: none;
+}
+.close {
+  color: #000;
+  float: right;
+  font-size: 20px;
+  font-weight: bold;
+  width: 10%;
+  text-align: end;
+  cursor: pointer;
+}
+.close span {
+	color: white;
+}
+
+/*End modal*/
+
+.container-fluid {
+	padding-top: 60px;
+}
+
+/*Start Map*/
+.map {
+    height: 700px;
+    width: 100%;
+}
+.olPopupContent {
+	font-size: 12px !important;
+	padding: 0 !important;
+	overflow: hidden !important;
+	text-align: center;
+}
+/*End Map*/
+
+
+/*START forms in modals*/
+form {
+	text-align: center;
+}
+.form-control {
+	border-radius: 5px;
+	height: 3em;
+	border: 1px solid #aaa;
+	margin-right: 10px;
+	margin-top: 10px;
+	width: 90%;	
+}
+.btn-holder {
+	display: flex;
+	padding: 10px;
+	justify-content: center;
+}
+button {
+	font-size: 0.7em;
+
+}
+.btn-primary {
+	border-radius: 5px;
+	background-color: #000080;
+	color: white;
+	height: 3em;
+	border: 1px solid #aaa;
+	width: 30%;
+}
+.btn-warning {
+	border-radius: 5px;
+	background-color: #FF9933;
+	color: white;
+	height: 3em;
+	border: 1px solid #aaa;
+}
+/*END modals*/
+
+/*START loading icon modal*/
+.loadingmodal {
+    display:    none;
+    position:   fixed;
+    z-index:    2000;
+    top:        0;
+    left:       0;
+    height:     100%;
+    width:      100%;
+    background: rgba( 255, 255, 255, .8 ) 
+                url('http://i.stack.imgur.com/FhHRx.gif') 
+                50% 50% 
+                no-repeat;
+}
+/* When the body has the loading class, we turn
+   the scrollbar off with overflow:hidden */
+body.loading .loadingmodal {
+    overflow: hidden;   
+}
+/* Anytime the body has the loading class, our
+   modal element will be visible */
+body.loading .loadingmodal {
+    display: block;
+}
+/*End loading icon modal*/
+

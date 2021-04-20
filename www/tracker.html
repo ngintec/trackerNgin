@@ -1,0 +1,357 @@
+<!DOCTYPE html> 
+<html lang = "en">
+ 
+   <head> 
+    <title>Tracker_ngIN geoTracking solutions</title>
+    <meta charset = "utf-8" /> 
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no, maximum-scale=1, minimum-scale=1">
+    <script type="text/javascript" src="js/tpjs/jquery-3.4.1.min.js"></script>
+    <script type="text/javascript" src="js/tpjs/jquery.validate.min.js" ></script>
+<!--     <script src="https://cdn.jsdelivr.net/gh/openlayers/openlayers.github.io@master/en/v6.5.0/build/ol.js"></script> -->
+    <script src="js/tpjs/OpenLayers.js"></script>
+    <link rel="stylesheet" href="css/tracker.css">
+    <!-- <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/openlayers/openlayers.github.io@master/en/v6.5.0/css/ol.css" type="text/css"> -->
+   </head> 
+	
+   <body class="bg-light"> 
+      <nav class="navbar navbar-dark bg-dark">
+        <li class="navbar-brand">
+            <a class="nav-link" href="#" onclick="toggleMenu()">TrackerNgin</a>
+        </li> 
+        <ul class="centering">
+          <li class="">
+              <a class="nav-link active" href="#">
+                Tracking status
+                <label class="switch">
+                  <input id="trackSwitch" type="checkbox" onchange="trackingSwitch()">
+                  <span class="slider">OFF</span>
+                </label>
+              </a>
+            </li>
+        </ul>
+        <div class="navbar-collapse hide" id="myToggler">
+          <ul class="navbar-nav">
+            <li class="dropdown-toggle">
+              <a class="nav-link" href="#">
+                Trackers
+              </a>
+              <div class="dropdown-menu">
+                <a class="dropdown-item" href="#" onclick="toggleModal('addTrackerModal')">Add</a>
+                <a class="dropdown-item" href="#" onclick="toggleModal('viewTrackerModal')">View</a>
+                <a class="dropdown-item" href="#" onclick="toggleModal('deleteTrackerModal')">Remove</a>
+              </div>
+            </li>
+            <li class="dropdown-toggle">
+              <a class="nav-link" href="#">
+                Users
+              </a>
+              <div class="dropdown-menu">
+                <a class="dropdown-item" href="#" onclick="toggleModal('inviteModal')">Invite</a>
+                <a class="dropdown-item" href="#" onclick="toggleModal('filterUserModal')">Filter</a>
+                <a class="dropdown-item" href="#" onclick="toggleModal('deleteTrackerModal')">Call</a>
+              </div>
+            </li>
+            <li class="dropdown-toggle">
+              <a class="nav-link" href="#" id="usersDropdownMenuLink">
+                Users
+              </a>
+              <div class="dropdown-menu">
+                <a class="dropdown-item" href="#" onclick="toggleModal('changeAliasModal')">Change Alias</a>
+                <a class="dropdown-item" href="#" onclick="toggleModal('resetPasswordModal')">Reset password</a>
+                <a class="dropdown-item" href="#" onclick="clearCred()">Logout</a>
+              </div>
+            </li>
+          </ul>
+        </div>
+      </nav>
+
+      <!-- Login Modal -->
+      <div id ="userLoginModal" class="modal">
+        <div>
+          <div class="modal-content">
+            <div class="modal-header">
+              <h5 class="modal-title">Login</h5>
+            </div>
+            <div class="modal-body">
+              <form id="login" autocomplete="on">
+                <input class="form-control" autocomplete="on" type="text" name="id" placeholder="Mobile number" pattern="\d+" minlength="10" maxlength="10" required/>
+                <input class="form-control" autocomplete="on" type="email" name="email" placeholder="Email" pattern="^[a-zA-Z0-9+_.-]+@[a-zA-Z0-9.-]+$" required/>
+                <input class="form-control" autocomplete="on" type="text" name="alias" placeholder="Vehicle id or Name" required/>
+                <input class="form-control" autocomplete="on" type="password" name="password" placeholder="current password" minlength="8" required/>
+                <div class="btn-holder">
+                  <button type="button" class="btn-warning" onclick="toggleModal('userRegisterModal')">
+                      New  ? Register
+                  </button>
+                  <button type="button" class="btn-warning" onclick="toggleModal('forgotPasswordModal')">
+                      Forgot password
+                  </button>
+                  <button class="btn-primary" type="submit">Login</button>
+                </div>
+              </form>
+            </div>
+            <div class="modal-footer justify-content-center text-center">
+              <div id="loginfeedback"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+
+      <!-- Register modal  -->
+      <div id ="userRegisterModal" class="modal">
+        <div>
+          <div class="modal-content">
+            <div class="modal-header">
+              <h5 class="modal-title">Register</h5>
+              <a class="close" onclick="toggleModal('userRegisterModal')">
+                <span aria-hidden="true">&times;</span>
+              </a>
+            </div>
+            <div class="modal-body">
+              <form id="register" autocomplete="on">
+                <input class="form-control" autocomplete="on" type="text" name="id" placeholder="Mobile number" pattern="\d+" minlength="10" maxlength="10" required/>
+                <input class="form-control" autocomplete="on" type="email" name="email" placeholder="Email" pattern="^[a-zA-Z0-9+_.-]+@[a-zA-Z0-9.-]+$" required/>
+                <input class="form-control" autocomplete="on" type="password" name="password" placeholder="password" minlength="8" required/>
+                <input class="form-control" autocomplete="on" type="password" name="confirmpassword" placeholder="same as password" minlength="8" required/>
+                <div class="btn-holder">
+                  <button id="toggleLogin" type="button" class="btn-warning" onclick="toggleModal('userRegisterModal')">
+                      Already Registered ? Login
+                  </button>
+                  <button class="btn-primary" type="submit">Register</button>
+                </div>
+              </form>
+            </div>
+            <div class="modal-footer justify-content-center text-center">
+              <div id="registerfeedback"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Add tracker -->
+      <div id ="addTrackerModal" class="modal">
+        <div>
+          <div class="modal-content">
+            <div class="modal-header">
+              <h5 class="modal-title">Add Tracker</h5>
+              <a class="close" onclick="toggleModal('addTrackerModal')">
+                <span aria-hidden="true">&times;</span>
+              </a>
+            </div>
+            <div class="modal-body">
+              <form id="addTracker" autocomplete="on">
+                <input class="form-control" autocomplete="on" type="text" name="Tracker" placeholder="Mobile number" pattern="\d+" minlength="10" maxlength="10" required/>
+                <div class="btn-holder">
+                  <button class="btn-primary" type="submit">Add</button>
+                </div>
+              </form>
+            </div>
+            <div class="modal-footer justify-content-center text-center">
+              <div id="addTrackerfeedback"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Get tracker -->
+      <div id ="viewTrackerModal" class="modal">
+        <div>
+          <div class="modal-content">
+            <div class="modal-header">
+              <h5 class="modal-title">My Trackers</h5>
+              <a class="close" onclick="toggleModal('viewTrackerModal')">
+                <span aria-hidden="true">&times;</span>
+              </a>
+            </div>
+            <div class="modal-body">
+              <form id="getTracker" autocomplete="on">
+                <select id="myTrackerList" class="col" readonly multiple></select>
+              </form>
+            </div>
+            <div class="modal-footer justify-content-center text-center">
+              <div id="getTrackerfeedback"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Delete tracker -->
+      <div id ="deleteTrackerModal" class="modal">
+        <div>
+          <div class="modal-content">
+            <div class="modal-header">
+              <h5 class="modal-title">Delete Tracker</h5>
+              <a class="close" onclick="toggleModal('deleteTrackerModal')">
+                <span aria-hidden="true">&times;</span>
+              </a>
+            </div>
+            <div class="modal-body">
+              <form id="deleteTracker" autocomplete="on">
+                <select id="delTrackerList" class="col form-control" name="Tracker"></select>
+                <div class="btn-holder">
+                  <button class="btn-primary" type="submit">Delete</button>
+                </div>
+              </form>
+            </div>
+            <div class="modal-footer justify-content-center text-center">
+              <div id="deleteTrackerfeedback"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Filter users you need to see -->
+      <div id ="filterUserModal" class="modal">
+        <div>
+          <div class="modal-content">
+            <div class="modal-header">
+              <h5 class="modal-title">My Users</h5>
+              <a class="close" onclick="toggleModal('filterUserModal')">
+                <span aria-hidden="true">&times;</span>
+              </a>
+            </div>
+            <div class="modal-body">
+              <form id="filterUsers" autocomplete="on">
+              
+                <div class="btn-holder">
+                  <button class="btn-primary" type="submit">Filter</button>
+                </div>
+              </form>
+            </div>
+            <div class="modal-footer justify-content-center text-center">
+              <div id="getTrackerfeedback"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <!-- invite modal -->
+      <div id ="inviteModal" class="modal">
+        <div>
+          <div class="modal-content">
+            <div class="modal-header">
+              <h5 class="modal-title">Invite</h5>
+              <a class="close" onclick="toggleModal('inviteModal')">
+                <span aria-hidden="true">&times;</span>
+              </a>
+            </div>
+            <div class="modal-body">
+              <form id="inviteUser" autocomplete="on">
+                <input class="form-control" autocomplete="on" type="text" name="id" placeholder="Mobile number" pattern="\d+" minlength="10" maxlength="10" required/>
+                <input class="form-control" autocomplete="on" type="email" name="email" placeholder="Email" pattern="^[a-zA-Z0-9+_.-]+@[a-zA-Z0-9.-]+$" required/>
+                <div class="btn-holder">
+                  <button class="btn-primary" type="submit">Invite</button>
+                </div>
+              </form>
+            </div>
+            <div class="modal-footer justify-content-center text-center">
+              <div id="invitefeedback"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+       <!-- forgot password modal -->
+      <div id ="forgotPasswordModal" class="modal" tabindex="-1" role="dialog">
+        <div class="modal-dialog modal-dialog-centered" role="document">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h5 class="modal-title">Forgot password</h5>
+              <a class="close" onclick="toggleModal('forgotPasswordModal')">
+                <span aria-hidden="true">&times;</span>
+              </a>
+            </div>
+            <div class="modal-body">
+              <form id="forgotPassword" autocomplete="on">
+                <input class="form-control" autocomplete="on" type="text" name="id" placeholder="Mobile number" pattern="\d+" minlength="10" maxlength="10" required/>
+                <input class="form-control" autocomplete="on" type="email" name="email" placeholder="Email" pattern="^[a-zA-Z0-9+_.-]+@[a-zA-Z0-9.-]+$" required/>
+                <div class="btn-holder">
+                  <button class="btn-primary" type="submit">Submit</button>
+                </div>
+              </form>
+            </div>
+            <div class="modal-footer justify-content-center text-center">
+              <div id="forgotpasswordfeedback"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- forgot password modal -->
+      <div id ="resetPasswordModal" class="modal" tabindex="-1" role="dialog">
+        <div class="modal-dialog modal-dialog-centered" role="document">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h5 class="modal-title">Reset password</h5>
+              <a class="close" onclick="toggleModal('resetPasswordModal')">
+                <span aria-hidden="true">&times;</span>
+              </a>
+            </div>
+            <div class="modal-body">
+              <form id="resetPassword" autocomplete="on">
+                  <input class="form-control" autocomplete="on" type="text" name="id" placeholder="Mobile number" pattern="\d+" minlength="10" maxlength="10" required/>
+                  <input class="form-control" autocomplete="on" type="email" name="email" placeholder="Email" pattern="^[a-zA-Z0-9+_.-]+@[a-zA-Z0-9.-]+$" required/>
+                  <input class="form-control" autocomplete="on" type="password" name="password" placeholder="password" minlength="8" required/>
+                  <input class="form-control" autocomplete="on" type="password" name="confirmpassword" placeholder="same as password" minlength="8" required/>
+                  <div class="btn-holder">
+                    <button class="btn-primary" type="submit">Reset</button>
+                </div>
+              </form>
+            </div>
+            <div class="modal-footer justify-content-center text-center">
+              <div id="resetPasswordfeedback"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- forgot password modal -->
+      <div id ="changeAliasModal" class="modal" tabindex="-1" role="dialog">
+        <div class="modal-dialog modal-dialog-centered" role="document">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h5 class="modal-title">Change Alias</h5>
+              <a class="close" onclick="toggleModal('changeAliasModal')">
+                <span aria-hidden="true">&times;</span>
+              </a>
+            </div>
+            <div class="modal-body">
+              <form id="changeAlias" autocomplete="on">
+                  <label></label>
+                  <input class="form-control" autocomplete="on" type="text" name="alias" placeholder="Vehicle id or Name" required/>
+                  <div class="btn-holder">
+                    <button class="btn-primary" type="submit">Change</button>
+                </div>
+              </form>
+            </div>
+            <div class="modal-footer justify-content-center text-center">
+              <div id="changeAliasfeedback"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <div class="container-fluid">
+        <div class="map" id="mapContainer">
+        </div>
+      </div>
+
+      <div class="loadingmodal"><!-- Place at bottom of page --></div>
+      <script type="text/javascript" src="js/io.js" ></script>
+      <script type="text/javascript" src="js/client.js"></script>
+      <script>
+        $(document).ready(function(){
+           let action = location.search.split("=")[1] ? location.search.split("=")[1] : undefined;
+           if (action){
+            if (action == "success"){
+              alert("Success, Now you can login");
+              location.search="";
+            } else {
+              alert("Failure, Some thing went wrong");
+              location.search="";
+            }
+           }
+        });
+      </script>
+   </body>
+</html>
