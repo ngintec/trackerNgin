@@ -217,7 +217,11 @@ def GetLocations(phone):
     for row in result.docs:
         user=row.__dict__
         if user["Location"] != "[]":
-            allusers.append({"location": ast.literal_eval(user["Location"]), "alias": user["alias"], "from": user["phone"]})
+            location=ast.literal_eval(user["Location"])
+            allusers.append({"location": location, "alias": user["alias"], "from": user["phone"]})
+            #add geo add to serah later
+            RedisClient.geoadd(phone, location[0], location[1], user["phone"])
+
     #need to restric the number of elements sent to front end 
     #what if 500 users to 1 tracker??? UI will be clumsy
     #GEO ADD can be added here for finding nearest entity
@@ -232,4 +236,20 @@ def GetServices():
         user=row.__dict__
         services.append({"alias": user["alias"], "phone": user["phone"]})
     return services, True
+
+def GetNeighbour(user_data):
+    longitude = user_data['location'][0]
+    latitude = user_data['location'][1]
+    service = user_data['service']
+
+    result= RedisClient.georadius(service, longitude, latitude, 50, unit=km, withdist=True, withcoord=True, count=5, sort="ASC")
+    searchResult=[]
+    for row in result:
+        location=[]
+        phone=row[0].decode("utf-8")
+        alias=RedisClient.hget("users:{}".format(phone),"alias").decode("utf-8")
+        searchResult.append({"from" :row[0].decode("utf-8"), "distance": row[1], "location": location.append(row[2]), "alias":alias})
+
+    return services, True
+
 

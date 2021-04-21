@@ -76,15 +76,15 @@
               <form id="login" autocomplete="on">
                 <input class="form-control" autocomplete="on" type="text" name="id" placeholder="Mobile number" pattern="\d+" minlength="10" maxlength="10" required/>
                 <input class="form-control" autocomplete="on" type="email" name="email" placeholder="Email" pattern="^[a-zA-Z0-9+_.-]+@[a-zA-Z0-9.-]+$" required/>
-                <input class="form-control" autocomplete="on" type="text" name="alias" placeholder="Vehicle id or Name" required/>
+                <input class="form-control" autocomplete="on" type="text" name="alias" placeholder="Vehicle id ,Service Name, Your name" required/>
                 <input class="form-control" autocomplete="on" type="password" name="password" placeholder="current password" minlength="8" required/>
                 <div class="btn-holder">
-                  <button type="button" class="btn-warning" onclick="toggleModal('userRegisterModal')">
+                  <a  class="btn-link" href="#" onclick="toggleModal('userRegisterModal')">
                       New  ? Register
-                  </button>
-                  <button type="button" class="btn-warning" onclick="toggleModal('forgotPasswordModal')">
+                  </a>
+                  <a  class="btn-link" href="#" onclick="toggleModal('forgotPasswordModal')">
                       Forgot password
-                  </button>
+                  </a>
                   <button class="btn-primary" type="submit">Login</button>
                 </div>
               </form>
@@ -118,9 +118,9 @@
                 <input class="form-control" autocomplete="on" type="password" name="password" placeholder="password" minlength="8" required/>
                 <input class="form-control" autocomplete="on" type="password" name="confirmpassword" placeholder="same as password" minlength="8" required/>
                 <div class="btn-holder">
-                  <button id="toggleLogin" type="button" class="btn-warning" onclick="toggleModal('userRegisterModal')">
+                  <a  id="toggleLogin" class="btn-link" href="#" onclick="toggleModal('userRegisterModal')">
                       Already Registered ? Login
-                  </button>
+                  </a>
                   <button class="btn-primary" type="submit">Register</button>
                 </div>
               </form>

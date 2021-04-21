@@ -12,5 +12,6 @@ urlpatterns = [
     path('tracker', csrf_exempt(views.Trackers.as_view())),
     path('invite', csrf_exempt(views.Invite.as_view())),
     path('location', csrf_exempt(views.Location.as_view())),
-    path('services', csrf_exempt(views.Service.as_view()))
+    path('services', csrf_exempt(views.Service.as_view())),
+    path('search', csrf_exempt(views.Search.as_view())),
 ]

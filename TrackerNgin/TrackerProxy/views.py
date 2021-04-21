@@ -240,3 +240,16 @@ class Service(APIView):
 			pass
 			return Response({"message":"Internal Server Error", "Reason":"Technical Error"},status=500)	
 
+class Search(APIView):
+	def post(self, request):
+		try:
+			user_data= request.data
+			message, result= RedisConnect.GetNeighbour(user_data)
+			if not result:
+				return Response({"message": "Some thing went Wrong", "Reason": message}, status=400)
+			return Response({"message": message})
+		except:
+			logger.error("Some Exception occured in Getting Services",exc_info=True)
+			pass
+			return Response({"message":"Internal Server Error", "Reason":"Technical Error"},status=500)	
+

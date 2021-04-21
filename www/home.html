@@ -1,0 +1,69 @@
+<!DOCTYPE html> 
+<html lang = "en">
+ 
+   <head> 
+    <title>Tracker_ngIN geoTracking solutions</title>
+    <meta charset = "utf-8" /> 
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no, maximum-scale=1, minimum-scale=1">
+    <script type="text/javascript" src="js/tpjs/jquery-3.4.1.min.js"></script>
+    <script type="text/javascript" src="js/tpjs/jquery.validate.min.js" ></script>
+    <script src="js/tpjs/OpenLayers.js"></script>
+    <link rel="stylesheet" href="css/tracker.css">
+   </head> 
+	
+   <body class="bg-light"> 
+      <nav class="navbar navbar-dark bg-dark">
+        <li class="navbar-brand">
+            <a class="nav-link" href="#" onclick="toggleMenu()">TrackerNgin</a>
+        </li> 
+        <ul class="centering">
+        </ul>
+        <div class="navbar-collapse" id="myToggler">
+          <ul class="navbar-nav">
+            <li class="dropdown-toggle">
+              <a class="nav-link" href="/tracker" >Login</a>
+            </li>
+          </ul>
+        </div>
+      </nav>
+
+      <div class="container">
+        <div class="top-card">
+          <div class="top-container">
+            <h3>Locate nearby ON THE GO Services</h3>
+            <p> Locate a public transport, Ambulance, Towing truck, police vehicle and many more services plying near you. </p>
+          </div>
+        </div>
+
+        <div class="other-card">
+          <div class="left-container">
+            <h3>Search</h3>
+            <div id="search">
+              <form id="searchForm">
+                <p>Select a Service below:</p>
+                <select class="form-control" id="services">
+                  
+                </select>
+                <div class="btn-holder">
+                    <button class="btn-primary" type="submit">Search</button>
+                </div>
+              </form>
+              <div class="modal-footer justify-content-center text-center">
+                <div id="searchFeedBack"></div>
+              </div>
+            </div>
+          </div>
+          <div class="right-container">
+            <div>
+              <div class="map-home" id="mapContainer">
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+
+      <script type="text/javascript" src="js/home.js" ></script>
+      <!-- <script type="text/javascript" src="js/client.js"></script> -->
+  </body>
+</html>

@@ -17,30 +17,22 @@ let markers={};// makers of every individual
 let popups={};//popups of every individual
 let watchid, mypopup, mymarker; //my data only watch id is used to clear the setInterval
 
-// here is where the location service starts
+
+//here is where the location service starts
+//setinterval to get location every 5 seconds
 async function getLocation() {
-      toggleLoading();
       if (navigator.geolocation) {
         watchid=navigator.geolocation.getCurrentPosition(recordPosition, failure, options);
-        // watchid=setInterval(() => navigator.geolocation.getCurrentPosition(recordPosition, failure, options),5000);
       } else {
         alert("Geolocation is not supported by this browser.");
       }
     }
 
-// success function for getCurrentPosition
-// once we get the location we send through websocket to the server
-// then we put ourselves on the map.
+//success function for getCurrentPosition
+//once we get the location we send through websocket to the server
+//then we put ourselves on the map.
 function recordPosition(position) {
-  myposition=[position.coords.longitude,position.coords.latitude];
-  
-  //send only when i have trackers
-  // if (myTrackers.length > 0){
-  //   console.log("Sending location")
-  //   sendData({location: myposition});
-  //   console.log("Sent location") ; 
-  // }
-  getData();  
+  myposition=[position.coords.longitude,position.coords.latitude]; 
   
   let lonLat = new OpenLayers.LonLat( myposition[0] ,myposition[1] )
   .transform(
@@ -62,7 +54,7 @@ function recordPosition(position) {
         "Popup", 
         lonLat,
         new OpenLayers.Size(50,15),
-        "Me",
+        "You",
         null,
         true
     );
@@ -77,25 +69,9 @@ function failure(err){
   // clearInterval(watchid);
   // watchid=setInterval(navigator.geolocation.getCurrentPosition(recordPosition, failure, options),5000);
   // navigator.geolocation.clearWatch(watchid);
-  watchid=navigator.geolocation.getCurrentPosition(recordPosition, failure, options);
+  navigator.geolocation.getCurrentPosition(recordPosition, failure, options);
 }
-// destroys all existing markers on the screen on disconnect
-function destroy_markers(){
-  map.removeLayer(mymarker);
-  map.removePopup(mypopup);
-  mymarker=undefined;
-  mypopup=undefined;
-  for (const [key, value] of Object.entries(markers)){
-    removeUserMarkers(key);
-  }
-}
-// separated function , so that can be called multiple times.
-function removeUserMarkers(key) {
-  map.removeLayer(markers[key]);
-  markers[key]=undefined;
-  map.removePopup(popups[key]);
-  popups[key]=undefined;
-}
+
 // plot other users on my map on gettting a message through websocket
 function plotPosition(data) {
   let userposition=data.location;
@@ -145,3 +121,80 @@ function plotPosition(data) {
     // not enabled users are already filtered in the filtering event;
   }
 }
+
+//get all the trackers to populate the add tracker drop down
+function getServices(){
+	fetch(`${base_url}services`,{
+			method: 'GET',
+			headers: {
+	      		'Content-Type': 'application/json',
+	      		},
+	    	}
+		).then(response => {
+			response.json().then(data => {
+			if (!response.ok){
+					return { data :data, state :false}
+				}
+			else{
+					return { data :data, state :true}
+				}
+			}).then((apifeedback) => {
+				if ( ! apifeedback.state){
+					$(`#errorLogs`).html(`${apifeedback.data.message}, ${apifeedback.data.Reason}`);
+				}  else {
+					$(`#services`).empty();
+					for (const tracker of apifeedback.data.message){
+						$(`#services`).append(`<option value="${tracker.phone}">${tracker.alias}:${tracker.phone}</option>`);
+					}
+				}
+		});
+		});
+
+
+}
+
+let myHostname = window.location.hostname;
+let port= window.location.port
+
+let env="dev"
+let base_url= `https://${myHostname}:${port}/${env}/`;
+// let wss_url= `wss://${myHostname}:${port}/ws${env}`;
+
+$(document).ready(function(){
+    getLocation();
+    getServices();
+    $(`#searchForm`).submit((event)=>{
+    	event.preventDefault();
+		toggleLoading();
+		const data = new FormData(event.target);
+		const jsonData = Object.fromEntries(data.entries());
+		jsonData.location = myposition
+
+		fetch(`${base_url}search`,{
+				method: 'POST',
+				headers: {
+		      		'Content-Type': 'application/json',
+		    		},
+		    	body: JSON.stringify(jsonData)
+		    	}
+				).then(response => {
+					response.json().then(data => {
+					if (!response.ok){
+							return { data :data, state :false}
+						}
+					else{
+							return { data :data, state :true}
+						}
+					}).then((apifeedback) => {
+						toggleLoading();
+						if (apifeedback.state){
+							for (const user of apifeedback.data.message){
+								plotPosition(user);
+							}
+						} else {
+							$(`#searchFeedBack`).html(`${apifeedback.data.message}, ${apifeedback.data.Reason}`);
+						}
+				});
+				})
+		});
+});

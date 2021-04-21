@@ -111,6 +111,10 @@ function toggleModal(id){
 
 	} else if (id == "addTrackerModal"){
 		getServices();
+	} else if ( id == "userRegisterModal"){
+		toggleModal('userLoginModal');
+	} else if ( id == "forgotPasswordModal"){
+		toggleModal('userLoginModal');
 	}
 	//clear all feedback messages
 	$(`.modal-footer div`).html("");
@@ -563,9 +567,7 @@ function getServices(){
 			method: 'GET',
 			headers: {
 	      		'Content-Type': 'application/json',
-	      		'id':myId,
-	      		'token':myToken
-	    		},
+	      		},
 	    	}
 		).then(response => {
 			response.json().then(data => {
