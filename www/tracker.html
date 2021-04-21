@@ -111,6 +111,10 @@
               <form id="register" autocomplete="on">
                 <input class="form-control" autocomplete="on" type="text" name="id" placeholder="Mobile number" pattern="\d+" minlength="10" maxlength="10" required/>
                 <input class="form-control" autocomplete="on" type="email" name="email" placeholder="Email" pattern="^[a-zA-Z0-9+_.-]+@[a-zA-Z0-9.-]+$" required/>
+                <div class="with-label">
+                  <p>Is Tracker?</p><input class="form-control" autocomplete="on" type="checkbox" name="isTracker" checked  title="Are you a Service" />
+                  <p>Searchable ?</p><input class="form-control" autocomplete="on" type="checkbox" name="exposed" checked  title="Are you a Searchable by others"/>
+                </div>
                 <input class="form-control" autocomplete="on" type="password" name="password" placeholder="password" minlength="8" required/>
                 <input class="form-control" autocomplete="on" type="password" name="confirmpassword" placeholder="same as password" minlength="8" required/>
                 <div class="btn-holder">
@@ -140,7 +144,7 @@
             </div>
             <div class="modal-body">
               <form id="addTracker" autocomplete="on">
-                <input class="form-control" autocomplete="on" type="text" name="Tracker" placeholder="Mobile number" pattern="\d+" minlength="10" maxlength="10" required/>
+                <select id="addTrackerList" class="col form-control" name="Tracker"></select>
                 <div class="btn-holder">
                   <button class="btn-primary" type="submit">Add</button>
                 </div>

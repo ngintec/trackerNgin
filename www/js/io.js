@@ -109,6 +109,8 @@ function toggleModal(id){
 			}
 		}
 
+	} else if (id == "addTrackerModal"){
+		getServices();
 	}
 	//clear all feedback messages
 	$(`.modal-footer div`).html("");
@@ -551,6 +553,40 @@ function getData(){
 				}
 		});
 		});
+
+}
+
+
+//get all the trackers to populate the add tracker drop down
+function getServices(){
+	fetch(`${base_url}services`,{
+			method: 'GET',
+			headers: {
+	      		'Content-Type': 'application/json',
+	      		'id':myId,
+	      		'token':myToken
+	    		},
+	    	}
+		).then(response => {
+			response.json().then(data => {
+			if (!response.ok){
+					return { data :data, state :false}
+				}
+			else{
+					return { data :data, state :true}
+				}
+			}).then((apifeedback) => {
+				if ( ! apifeedback.state){
+					$(`#errorLogs`).html(`${apifeedback.data.message}, ${apifeedback.data.Reason}`);
+				}  else {
+					$(`#addTrackerList`).empty();
+					for (const tracker of apifeedback.data.message){
+						$(`#addTrackerList`).append(`<option value="${tracker.phone}">${tracker.alias}:${tracker.phone}</option>`);
+					}
+				}
+		});
+		});
+
 
 }
 // stop processing and leave the user alone

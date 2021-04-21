@@ -228,5 +228,15 @@ class Location(APIView):
 			pass
 			return Response({"message":"Internal Server Error", "Reason":"Technical Error"},status=500)
 
-
+class Service(APIView):
+	def get(self, request):
+		try:
+			message, result= RedisConnect.GetServices()
+			if not result:
+				return Response({"message": "Some thing went Wrong", "Reason": message}, status=400)
+			return Response({"message": message})
+		except:
+			logger.error("Some Exception occured in Getting Services",exc_info=True)
+			pass
+			return Response({"message":"Internal Server Error", "Reason":"Technical Error"},status=500)	
 

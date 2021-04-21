@@ -225,6 +225,11 @@ h3, h5 {
 .close span {
 	color: white;
 }
+.modal-footer {
+  font-size: 0.7em;
+  text-align: center;
+  margin: 1em;
+}
 
 /*End modal*/
 
@@ -282,6 +287,20 @@ button {
 	height: 3em;
 	border: 1px solid #aaa;
 }
+
+.with-label {
+  display: flex;
+  margin-left: 1em;
+}
+.with-label p{
+  font-size: 0.7em;
+  white-space: nowrap;
+  margin-top: 1.3em; 
+}
+.with-label input{
+  margin-right: 1em;
+}
+
 /*END modals*/
 
 /*START loading icon modal*/

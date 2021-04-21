@@ -17,10 +17,10 @@ RedisClient = redis.Redis(host='localhost', port=6379)
 #FT.CREATE idx:users ON hash PREFIX 1 "users:" SCHEMA searchable_email TEXT SORTABLE phone TEXT SORTABLE
 #searchable email is created to avoid issues with "@" in email
 users_idx=Client('idx:users')
-#FT.CREATE idx:token ON hash PREFIX 1 "users:" SCHEMA Token TEXT SORTABLE trackers TEXT SORTABLE
+#FT.CREATE idx:trackerlist ON hash PREFIX 1 "users:" SCHEMA isTracker TEXT SORTABLE exposed TEXT SORTABLE
 #this is used to send tokens to logged in users
-token_idx=Client('idx:token')
-#FT.CREATE idx:trackers ON hash PREFIX 1 "users:" SCHEMA phone TEXT SORTABLE alias TEXT SORTABLE  trackers TEXT SORTABLE location TEXT SORTABLE
+trackerList_idx=Client('idx:trackerlist')
+#FT.CREATE idx:trackers ON hash PREFIX 1 "users:" SCHEMA Trackers TEXT SORTABLE
 # this is to search the hashes for all users who have tracker as me to be added in Locations(GET) api
 trackers_idx=Client('idx:trackers')
 ###############################
@@ -44,7 +44,18 @@ def Register_Users(user_data):
         if User_Exists(user_data['searchable_email'],key):
             return "User_Exists", False
 
-        
+        # flag user as tracker or not, this is further used to get availible services
+        if "isTracker" in user_data.keys():
+            user_data['isTracker']= "True"
+        else:
+            user_data['isTracker']= "False"
+        # flag service as exposed or not, if exposed , data will be avalible for search option
+        # impacts only if Tracker 
+        if "exposed" in user_data.keys():
+            user_data['exposed']= "True"
+        else:
+            user_data['exposed']= "False"
+
         # if Doesnt exists perform hashing and generate tokens
         user_data['password']=HashPassword(user_data['password'])
         user_data['Verification_Code']=GenerateToken(100)
@@ -53,7 +64,7 @@ def Register_Users(user_data):
         user_data['phone']=key
         user_data['alias']=""
         user_data['email_verified']="False"
-        user_data['Trackers']=""
+        user_data['Trackers']="[]"
         user_data['Location']="[]"
         user_data['Token']=GenerateToken(64)
         user_data['last_update']= str(timezone.now())
@@ -213,5 +224,12 @@ def GetLocations(phone):
     #use case emegency help
     return allusers, True
 
-    
+def GetServices():
+    result=trackerList_idx.search("@isTracker:True  @exposed:True")
+    print(result)
+    services=[]
+    for row in result.docs:
+        user=row.__dict__
+        services.append({"alias": user["alias"], "phone": user["phone"]})
+    return services, True
 
