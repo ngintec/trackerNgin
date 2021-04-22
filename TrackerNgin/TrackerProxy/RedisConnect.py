@@ -144,9 +144,7 @@ def Verify_Email(code, phone):
     else:
         return "Verification Failed", False
 
-def UpdateAlias(user_data):
-    phone=user_data['id']
-    alias=user_data['alias']
+def UpdateAlias(phone, alias):
     #update the alias on redis
     RedisClient.hset("users:{}".format(phone),key='alias',value=alias)
     return "Updated Alias", True
@@ -249,5 +247,9 @@ def GetNeighbour(user_data):
         searchResult.append({"from" :row[0].decode("utf-8"), "distance": row[1], "location": row[2], "alias":alias})
 
     return searchResult, True
+
+
+
+
 
 

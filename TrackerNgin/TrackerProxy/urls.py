@@ -14,4 +14,5 @@ urlpatterns = [
     path('location', csrf_exempt(views.Location.as_view())),
     path('services', csrf_exempt(views.Service.as_view())),
     path('search', csrf_exempt(views.Search.as_view())),
+    path('alias', csrf_exempt(views.Alias.as_view())),
 ]

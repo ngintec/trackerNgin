@@ -60,7 +60,9 @@ class Users(APIView):
 					return Response(response,status=400)
 				#set the alias as sent in login form
 				return_reponse= message
-				message, status = RedisConnect.UpdateAlias(user_data)
+				phone=user_data['id']
+				alias=user_data['alias']
+				message, status = RedisConnect.UpdateAlias(phone,alias)
 				if not status:
 					response = { "message" : "Login Failed", "Reason": message}
 					return Response(response,status=400)
@@ -227,6 +229,26 @@ class Location(APIView):
 			logger.error("Some Exception occured in Updating Location",exc_info=True)
 			pass
 			return Response({"message":"Internal Server Error", "Reason":"Technical Error"},status=500)
+
+class Alias(APIView):
+	permission_classes=[LoggedIn]
+
+	def post(self, request):
+		try:
+			user_data=request.data
+
+			phone=request.headers['id']
+			alias=user_data['alias']
+
+			message, status = RedisConnect.UpdateAlias(phone,alias)
+			if not status:
+				return Response({"message": "Some thing went Wrong", "Reason": message}, status=400)
+			return Response({"message": message , "alias": alias})
+		except:
+			logger.error("Some Exception occured in Getting Services",exc_info=True)
+			pass
+			return Response({"message":"Internal Server Error", "Reason":"Technical Error"},status=500)	
+
 
 class Service(APIView):
 	def get(self, request):
