@@ -47,7 +47,7 @@ function retrieveCred(){
 //clear stored credentials from browser storage
 function clearCred(){
 	myStorage.removeItem('tracker_ngin');
-	location.reload();
+	location.href="/home";
 }
 //clear store my trackers into browser storage
 function storeTrackers(trackers){
@@ -71,21 +71,19 @@ function userAuth(){
 		myTrackers=obj.trackers;
 		// myEntities=obj.Entities;
 		myAlias=obj.alias;
+		console.log("validating")
 		updateTrackers(myTrackers);//updates the trackers list 
 		// updateEntities(myEntities);
 		$(`#usersDropdownMenuLink`).html(`+91-${myId}`);
 		$(`#changeAlias label`).html(`Current Alias: ${obj.alias}`);
 		$(`#myToggler`).removeClass("hide");
+		// get my location and plot;
+  		getLocation(); 
 	} else {
 		toggleModal(`userLoginModal`);
 	}
 }
 
-//toggle between register ==> login
-toggleLogin.addEventListener('click', ()=> {
-	$(`#userRegisterModal`).modal('hide');
-	$(`#userLoginModal`).modal();
-})
 
 //loading modal to impress user :)
 function toggleLoading(){
@@ -134,10 +132,9 @@ function toggleMenu(){
 //switch traking on and off
 function trackingSwitch() {
 	if (document.getElementById(`trackSwitch`).checked){
-		toggleLoading();
 		$(`.switch .slider`).html("ON");
 		$(`.switch .slider`).css("text-align","left");
-		getLocation();
+		watchid=setInterval(()=>{ getData()},10000);
 	} else {
 		$(`.switch .slider`).html("OFF");
 		$(`.switch .slider`).css("text-align","right");
@@ -347,7 +344,9 @@ function addTracker(event){
 function updateTrackers(trackers){
 	$(`#myTrackerList`).empty();
 	$(`#delTrackerList`).empty();
+	console.log(trackers)
 	for ( const tracker of trackers){
+		console.log(tracker)
 		$(`#myTrackerList`).append(`<option>${tracker}</option>`);
 		$(`#delTrackerList`).append(`<option>${tracker}</option>`);
 	}
@@ -596,11 +595,6 @@ function stopLocation(){
 	// console.log("closing connection");
 	destroy_markers();
 	navigator.geolocation.clearWatch(watchid);
-	// clearInterval(watchid);
+	clearInterval(watchid);
 	document.getElementById(`trackSwitch`).checked=false;
-	
 }
-
-
-//
-userAuth();

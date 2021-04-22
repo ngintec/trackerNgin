@@ -10,7 +10,7 @@ body {
 
 /*Nav br styling*/
 .bg-dark {
-  background-color: #343a40;
+  background-color: #000000;
   color: white;
 } 
 .navbar {
@@ -37,12 +37,19 @@ body {
 }
 
 @media (max-width: 500px ){
+
+    .navbar-collapse {
+      position: fixed;
+      right: 5px;
+      text-align: center;
+      margin-block-start: 0.5em;
+    }
     .navbar-nav {
       top: 60px;
       display: none;
       position: fixed;
       left: 0;
-      width: 50%;
+      width: 100%;
       padding-left: 0;
       margin-top: 0;
       border: 1px solid white;
@@ -55,9 +62,9 @@ body {
       border-bottom: 1px solid white
     }
     .dropdown-menu {
-      position: fixed;
+      position: relative;
       left: 50%;
-      top: 90px;
+      top: 0px;
       width: 50%;
     }
 
@@ -188,7 +195,7 @@ input:checked + .slider:before {
 @media (max-width: 500px ){
   .modal-content {
   background-color: #fefefe;
-  margin: 15% auto; /* 15% from the top and centered */
+  margin: 35% auto; /* 15% from the top and centered */
   padding: 0px;
   border: 1px solid #888;
   width: 90%; /* Could be more or less, depending on screen size */
@@ -202,7 +209,7 @@ h3, h5 {
 	border-bottom: 1px solid #000;
  	height: 1em;
 	display: flex;
-	background-color: #666666;
+	background-color: #4a4a4a;
 	color: white;
 	padding: 10px;
   border-radius: 10px 10px 0 0;
@@ -251,6 +258,10 @@ h3, h5 {
 	overflow: hidden !important;
 	text-align: center;
 }
+/*Make sure attribution is in the bottom and not blocking view*/
+.olControlAttribution{
+  bottom: 5px ! important;
+}
 /*End Map*/
 
 
@@ -294,7 +305,17 @@ button {
 .btn-link {
   font-size: 0.7em;
   margin: 1em;
-  color: #444444;
+  color: #4a4a4a;
+  text-align: left;
+}
+
+@media (max-width: 500px ){
+    .btn-link {
+    font-size: 0.7em;
+    margin-top: 1em;
+    color: #4a4a4a;
+    text-align: left;
+  }
 }
 
 .with-label {
@@ -322,7 +343,7 @@ button {
     height:     100%;
     width:      100%;
     background: rgba( 255, 255, 255, .8 ) 
-                url('http://i.stack.imgur.com/FhHRx.gif') 
+                url('/css/FhHRx.gif') 
                 50% 50% 
                 no-repeat;
 }
@@ -348,11 +369,17 @@ body.loading .loadingmodal {
   /* Add shadows to create the "card" effect */
   box-shadow: 0 4px 8px 0 rgba(0,0,0,0.2);
   transition: 0.3s;
-  background-color: #666666;
+  background-color: #4a4a4a;
   margin: 70px 50px;
   display: flex;
   color: #e4e4e4;
 }
+
+.top-container {
+  padding: 8px 16px;
+  height: 30%;
+}
+
 
 .other-card {
   /* Add shadows to create the "card" effect */
@@ -361,11 +388,7 @@ body.loading .loadingmodal {
   background-color: #ffffff;
   margin: 0px 50px;
   display: flex;
-  color: #666666;
-}
-.top-container {
-  padding: 8px 16px;
-  height: 30%;
+  color: #4a4a4a;
 }
 
 .left-container {
@@ -393,3 +416,49 @@ body.loading .loadingmodal {
 #searchForm p{
   text-align: left;
 }
+
+@media (max-width: 500px ){
+    .top-card {
+      /* Add shadows to create the "card" effect */
+      box-shadow: 0 4px 8px 0 rgba(0,0,0,0.2);
+      transition: 0.3s;
+      background-color: #666666;
+      margin: 70px 5px;
+      display: flex;
+      color: #e4e4e4;
+    }
+
+  .other-card {
+  /* Add shadows to create the "card" effect */
+    box-shadow: 0 4px 8px 0 rgba(0,0,0,0.2);
+    transition: 0.3s;
+    background-color: #ffffff;
+    margin: 0px 5px;
+    display: block;
+    color: #e4e4e4;
+  }
+
+  .left-container {
+    padding: 4px 8px;
+    height: 70%;
+    width: 100%;
+  }
+
+  .right-container {
+    padding: 4px 8px;
+    height: 70%;
+    width: 100%;
+    padding-left: 0px;
+  }
+
+  #search {
+    margin-top: 1em;
+  }
+
+  #searchForm p{
+  text-align: center;
+}
+}
+
+
+

@@ -1,5 +1,5 @@
 import redis
-import logging, traceback, json
+import logging, traceback, json, ast
 from redisearch import Client, TextField, IndexDefinition, Query
 from .utils import *
 from django.utils import timezone
@@ -116,7 +116,8 @@ def Login_Users(user_data):
         else:
             JsonResponse={}
             JsonResponse['token'] = result.docs[0].Token
-            JsonResponse['trackers'] = result.docs[0].Trackers
+            JsonResponse['trackers'] = ast.literal_eval(result.docs[0].Trackers)
+            JsonResponse['alias'] = result.docs[0].alias
             JsonResponse['email']=email
             JsonResponse['id']=phone
             return JsonResponse, True
@@ -169,7 +170,6 @@ def UpdateForgottenPassword(user_data):
     return temp_password, True
 
 def AddTracker(user_data):
-    import ast
 
     tracker=user_data['Tracker']
     phone=user_data['id']
@@ -187,7 +187,6 @@ def AddTracker(user_data):
 
 
 def DeleteTracker(user_data):
-    import ast
 
     tracker=user_data['Tracker']
     phone=user_data['id']
@@ -211,7 +210,7 @@ def UpdateLocation(user_data):
 
 
 def GetLocations(phone):
-    import ast
+
     result=trackers_idx.search(phone)
     allusers=[]
     for row in result.docs:
@@ -230,7 +229,7 @@ def GetLocations(phone):
 
 def GetServices():
     result=trackerList_idx.search("@isTracker:True  @exposed:True")
-    print(result)
+    # print(result) 
     services=[]
     for row in result.docs:
         user=row.__dict__
@@ -241,15 +240,14 @@ def GetNeighbour(user_data):
     longitude = user_data['location'][0]
     latitude = user_data['location'][1]
     service = user_data['service']
-
-    result= RedisClient.georadius(service, longitude, latitude, 50, unit=km, withdist=True, withcoord=True, count=5, sort="ASC")
+    result= RedisClient.georadius(service, longitude, latitude, 50, unit="km", withdist=True, withcoord=True, count=5, sort="ASC")
     searchResult=[]
     for row in result:
         location=[]
         phone=row[0].decode("utf-8")
         alias=RedisClient.hget("users:{}".format(phone),"alias").decode("utf-8")
-        searchResult.append({"from" :row[0].decode("utf-8"), "distance": row[1], "location": location.append(row[2]), "alias":alias})
+        searchResult.append({"from" :row[0].decode("utf-8"), "distance": row[1], "location": row[2], "alias":alias})
 
-    return services, True
+    return searchResult, True
 
 

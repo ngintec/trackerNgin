@@ -83,9 +83,9 @@ function plotPosition(data) {
   //if iam a new user do below
   if (!myusers[data.from]){
     //add user to myuserlist and set tracking as on by default
-    myuserlist[data.alias]="on";
+    // myuserlist[data.alias]="on";
     //add user to enabledusers and set tracking as on by default
-    enabledUsers.push(data.alias);
+    // enabledUsers.push(data.alias);
     //perform actions to put him on the map
     markers[data.from] = new OpenLayers.Layer.Markers( "Markers" );
     myusers[data.from]=new OpenLayers.Marker(lonLat)
@@ -102,7 +102,6 @@ function plotPosition(data) {
     map.addPopup(popups[data.from])
   } else {
     //if its an old user check if he is enabled and then only plot his position;
-    if (enabledUsers.indexOf(data.alias) > -1 ){
       //clearmarker
       // map.removeLayer(markers[data.from]);
       map.removePopup(popups[data.from]);
@@ -117,7 +116,6 @@ function plotPosition(data) {
           true
       );
       map.addPopup(popups[data.from])
-    } 
     // not enabled users are already filtered in the filtering event;
   }
 }
@@ -160,7 +158,19 @@ let env="dev"
 let base_url= `https://${myHostname}:${port}/${env}/`;
 // let wss_url= `wss://${myHostname}:${port}/ws${env}`;
 
+function toggleMenu(){
+	$menu = $(`#myToggler .navbar-nav`);
+	$menu.toggleClass('showmenu');
+}
+
+//loading modal to impress user :)
+function toggleLoading(){
+	$body = $("body");
+	$body.toggleClass("loading");
+}
+
 $(document).ready(function(){
+
     getLocation();
     getServices();
     $(`#searchForm`).submit((event)=>{
@@ -188,7 +198,9 @@ $(document).ready(function(){
 					}).then((apifeedback) => {
 						toggleLoading();
 						if (apifeedback.state){
+							$(`#searchFeedBack`).empty();
 							for (const user of apifeedback.data.message){
+								$(`#searchFeedBack`).append(`<p>${user.alias} is ${user.distance}Km from you</p>`)
 								plotPosition(user);
 							}
 						} else {

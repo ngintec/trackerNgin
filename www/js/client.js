@@ -19,10 +19,8 @@ let watchid, mypopup, mymarker; //my data only watch id is used to clear the set
 
 // here is where the location service starts
 async function getLocation() {
-      toggleLoading();
       if (navigator.geolocation) {
-        watchid=navigator.geolocation.getCurrentPosition(recordPosition, failure, options);
-        // watchid=setInterval(() => navigator.geolocation.getCurrentPosition(recordPosition, failure, options),5000);
+        navigator.geolocation.getCurrentPosition(recordPosition, failure, options);
       } else {
         alert("Geolocation is not supported by this browser.");
       }
@@ -34,14 +32,8 @@ async function getLocation() {
 function recordPosition(position) {
   myposition=[position.coords.longitude,position.coords.latitude];
   
-  //send only when i have trackers
-  // if (myTrackers.length > 0){
-  //   console.log("Sending location")
-  //   sendData({location: myposition});
-  //   console.log("Sent location") ; 
-  // }
-  getData();  
-  
+  //send only data once
+  sendData({location: myposition});  
   let lonLat = new OpenLayers.LonLat( myposition[0] ,myposition[1] )
   .transform(
     new OpenLayers.Projection("EPSG:4326"), // transform from WGS 1984
@@ -62,7 +54,7 @@ function recordPosition(position) {
         "Popup", 
         lonLat,
         new OpenLayers.Size(50,15),
-        "Me",
+        "You",
         null,
         true
     );
@@ -145,3 +137,5 @@ function plotPosition(data) {
     // not enabled users are already filtered in the filtering event;
   }
 }
+
+
