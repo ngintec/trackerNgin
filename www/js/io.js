@@ -12,15 +12,12 @@ let myuserlist={};//all users who are send me data
 var enabledUsers =[] ;//list of users i want to monitor ( filter option )
 let myHostname = window.location.hostname;
 let port= window.location.port
-if (!myHostname) {
-  myHostname = "913271497c04.ngrok.io";
-  port="80";
-}
 
 let env="dev"
 let base_url= `https://${myHostname}:${port}/${env}/`;
 let wss_url= `wss://${myHostname}:${port}/ws${env}`;
 
+let updateFrequency= 10; //in seconds we update every x miliseconds
 //store credentails into browser storage for reuse 
 function storeCred(cred){
 	obj=cred
@@ -71,11 +68,11 @@ function userAuth(){
 		myTrackers=obj.trackers;
 		// myEntities=obj.Entities;
 		myAlias=obj.alias;
-		console.log("validating")
 		updateTrackers(myTrackers);//updates the trackers list 
 		// updateEntities(myEntities);
 		$(`#usersDropdownMenuLink`).html(`+91-${myId}`);
 		$(`#changeAlias label`).html(`Current Alias: ${obj.alias}`);
+		$(`#changeFrequency label`).html(`Current Frequency: ${updateFrequency} seconds`);
 		$(`#myToggler`).removeClass("hide");
 		// get my location and plot;
   		getLocation(); 
@@ -134,7 +131,7 @@ function trackingSwitch() {
 	if (document.getElementById(`trackSwitch`).checked){
 		$(`.switch .slider`).html("ON");
 		$(`.switch .slider`).css("text-align","left");
-		watchid=setInterval(()=>{ getData()},10000);
+		watchid=setInterval(()=>{ getData()},updateFrequency * 1000);
 	} else {
 		$(`.switch .slider`).html("OFF");
 		$(`.switch .slider`).css("text-align","right");
@@ -344,9 +341,7 @@ function addTracker(event){
 function updateTrackers(trackers){
 	$(`#myTrackerList`).empty();
 	$(`#delTrackerList`).empty();
-	console.log(trackers)
 	for ( const tracker of trackers){
-		console.log(tracker)
 		$(`#myTrackerList`).append(`<option>${tracker}</option>`);
 		$(`#delTrackerList`).append(`<option>${tracker}</option>`);
 	}
@@ -501,6 +496,24 @@ function changeAlias(event){
 		});
 		})
 }
+
+//change update frequency
+const changeFrequencyForm = document.getElementById('changeFrequency');
+changeFrequencyForm.addEventListener('submit', changeFrequency);
+
+function changeFrequency(event){
+	event.preventDefault();
+	toggleLoading();
+	const data = new FormData(event.target);
+	const jsonData = Object.fromEntries(data.entries());
+	updateFrequency=jsonData.frequency;
+	$(`#changeFrequency label`).html(`Current Frequency: ${updateFrequency} seconds`);
+	$(`#changeFrequencyfeedback`).html(`Update Frequency Updated, the new frequency will be lost on browser refresh`);
+	clearInterval(watchid);
+	watchid=setInterval(()=>{ getData()},updateFrequency * 1000);
+	toggleLoading();
+}
+
 
 function sendData(jsonData){
 	fetch(`${base_url}location`,{
