@@ -18,65 +18,66 @@ logger.addHandler(c_handler)
 
 
 class Users(APIView):
+	#this Class handles register ( PUT ) and Login ( POST )
 
-		def put(self, request):
-			try:
-				request_origin = request.META['HTTP_ORIGIN']
-				# validate the input
-				user_data=request.data
-				status, message = ValidateInput(user_data)
-				# if succes take action
-				if not status:
-					return Response(response,status=400)
-				#entries into redis
-				message, status= RedisConnect.Register_Users(user_data)
-				#Check if user registration failed
-				if not status:
-					#else respond with error
-					response = { "message" : "Could not register", "Reason": message}
-					return Response(response,status=400)
-				#Send mail to confirm email id
-				message, status= SendRegisterMail(message['email'],message['Verification_Code'],message['phone'],request_origin)
-				#Check if some thing happens during email sending
-				if not status:
-					RedisConnect.Clear_User(user_data)
-					response = { "message" : "Could not register", "Reason": message}
-					return Response(response,status=400)
-				else:
-					response = { "message" : "Registration Success, Please verify your email before Logging in( Check Yor Email, including Junk Folder )"}
-					return Response(response)
-			except:
-				logger.error("Some Exception occured in Register user",exc_info=True)
-				pass
-				return Response({"message":"Internal Server Error", "Reason":"Technical Error"},status=500)
+	def put(self, request):
+		try:
+			request_origin = request.META['HTTP_ORIGIN']
+			# validate the input
+			user_data=request.data
+			status, message = ValidateInput(user_data)
+			# if succes take action
+			if not status:
+				return Response(response,status=400)
+			#entries into redis
+			message, status= RedisConnect.Register_Users(user_data)
+			#Check if user registration failed
+			if not status:
+				#else respond with error
+				response = { "message" : "Could not register", "Reason": message}
+				return Response(response,status=400)
+			#Send mail to confirm email id
+			message, status= SendRegisterMail(message['email'],message['Verification_Code'],message['phone'],request_origin)
+			#Check if some thing happens during email sending
+			if not status:
+				RedisConnect.Clear_User(user_data)
+				response = { "message" : "Could not register", "Reason": message}
+				return Response(response,status=400)
+			else:
+				response = { "message" : "Registration Success, Please verify your email before Logging in( Check Yor Email, including Junk Folder )"}
+				return Response(response)
+		except:
+			logger.error("Some Exception occured in Register user",exc_info=True)
+			pass
+			return Response({"message":"Internal Server Error", "Reason":"Technical Error"},status=500)
 
-		def post(self, request):
-			try:
-				user_data=request.data
-				#try to login the user
-				message, status = RedisConnect.Login_Users(user_data)
-				if not status:
-					response = { "message" : message}
-					return Response(response,status=400)
-				#set the alias as sent in login form
-				return_reponse= message
-				phone=user_data['id']
-				alias=user_data['alias']
-				message, status = RedisConnect.UpdateAlias(phone,alias)
-				if not status:
-					response = { "message" : "Login Failed", "Reason": message}
-					return Response(response,status=400)
-				#add alias here on success
-				return_reponse['alias']=user_data['alias']
-				return Response(return_reponse)
-			except:
-				logger.error("Some Exception occured in Logging user",exc_info=True)
-				pass
-				return Response({"message":"Internal Server Error", "Reason":"Technical Error"},status=500)
+	def post(self, request):
+		try:
+			user_data=request.data
+			#try to login the user
+			message, status = RedisConnect.Login_Users(user_data)
+			if not status:
+				response = { "message" : message}
+				return Response(response,status=400)
+			#set the alias as sent in login form
+			return_reponse= message
+			phone=user_data['id']
+			alias=user_data['alias']
+			message, status = RedisConnect.UpdateAlias(phone,alias)
+			if not status:
+				response = { "message" : "Login Failed", "Reason": message}
+				return Response(response,status=400)
+			#add alias here on success
+			return_reponse['alias']=user_data['alias']
+			return Response(return_reponse)
+		except:
+			logger.error("Some Exception occured in Logging user",exc_info=True)
+			pass
+			return Response({"message":"Internal Server Error", "Reason":"Technical Error"},status=500)
 
 
 class VerifyEmail(APIView):
-
+	#this Class handles verify email simple GET
 	def get(self, request):
 		try:
 			if request.GET.get("uc", False) and request.GET.get("id", False):
@@ -95,6 +96,8 @@ class VerifyEmail(APIView):
 
 
 class ResetPassword(APIView):
+	#this Class handles reset password
+	# user needs to be logged in to perform the action
 	permission_classes=[LoggedIn]
 
 	def post(self, request):
@@ -117,6 +120,7 @@ class ResetPassword(APIView):
 			return Response({"message":"Internal Server Error", "Reason":"Technical Error"},status=500)
 
 class ForgotPassword(APIView):
+	#we generate a dummy password if user forgot hist password and send to his email id
 
 	def post(self, request):
 		try:
@@ -138,6 +142,9 @@ class ForgotPassword(APIView):
 
 
 class Trackers(APIView):
+	# this Class handles Addind and removing trackers for User
+	# user can have multiple trackers just in case
+	# user needs to be logged in to perform the action
 	permission_classes=[LoggedIn]
 
 	def post(self, request):
@@ -180,6 +187,8 @@ class Trackers(APIView):
 
 
 class Invite(APIView):
+	# Users can invite ohters into the platform
+	# user needs to be logged in to perform the action
 	permission_classes=[LoggedIn]
 
 	def post(self, request):
@@ -202,6 +211,10 @@ class Invite(APIView):
 #Logout = change the token??
 
 class Location(APIView):
+	# Users can set his location
+	# We also add the geolocation for searching the distance from a user later
+	# Trackers can get location of all his trackee ( we use redis search here)
+	# user needs to be logged in to perform the action
 	permission_classes=[LoggedIn]
 
 	def post(self, request):
@@ -231,6 +244,8 @@ class Location(APIView):
 			return Response({"message":"Internal Server Error", "Reason":"Technical Error"},status=500)
 
 class Alias(APIView):
+	# Users can set/change their alias ( specific case where bus drivers drive different routes/ bus numbers)
+	# user needs to be logged in to perform the action
 	permission_classes=[LoggedIn]
 
 	def post(self, request):
@@ -251,6 +266,8 @@ class Alias(APIView):
 
 
 class Service(APIView):
+	# Get a list of all exposed trackers
+	# Note trackers can hide their roooms to them selves and are not exposed to generic users
 	def get(self, request):
 		try:
 			message, result= RedisConnect.GetServices()
@@ -263,6 +280,7 @@ class Service(APIView):
 			return Response({"message":"Internal Server Error", "Reason":"Technical Error"},status=500)	
 
 class Search(APIView):
+	# Search for a OTG vehicle nearest to you based on service ( Tracker )
 	def post(self, request):
 		try:
 			user_data= request.data

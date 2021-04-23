@@ -70,9 +70,6 @@ function recordPosition(position) {
 //clears the old location watchid
 function failure(err){
   alert("Error getting your position", err.message, "Will retry");
-  // clearInterval(watchid);
-  // watchid=setInterval(navigator.geolocation.getCurrentPosition(recordPosition, failure, options),5000);
-  // navigator.geolocation.clearWatch(watchid);
   watchid=navigator.geolocation.getCurrentPosition(recordPosition, failure, options);
 }
 
@@ -140,8 +137,9 @@ function plotPosition(data) {
   } else {
     //if its an old user check if he is enabled and then only plot his position;
     if (enabledUsers.indexOf(data.alias) > -1 ){
-      //clearmarker
+      //clear marker to be removed after UAT
       // map.removeLayer(markers[data.from]);
+      //Clear popups
       map.removePopup(popups[data.from]);
       //redraw
       markers[data.from].addMarker(myusers[data.from]);

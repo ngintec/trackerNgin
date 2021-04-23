@@ -27,7 +27,7 @@ trackers_idx=Client('idx:trackers')
 
 
 def User_Exists(email, number):
-    # we use redis search because we can verify both email and password in one go
+    # we use REDISEARCH because we can verify both email and password in one go
     result=users_idx.search("{}|{}".format(email, number))
     if result.total > 0:
         return True
@@ -73,7 +73,7 @@ def Register_Users(user_data):
         #inset into Redis
         RedisClient.hset('users:{}'.format(key), mapping=user_data)
         #pick the result and verify
-        #using redissearch to avoid conversion from binary to json
+        #using REDISEARCH to avoid conversion from binary to json
         result=users_idx.search("{}".format(key))
 
         if result.total == 0:
@@ -114,6 +114,7 @@ def Login_Users(user_data):
         if result.total == 0:
             return "Technical Error", False
         else:
+            # we send all the require info for some authorization in the front end
             JsonResponse={}
             JsonResponse['token'] = result.docs[0].Token
             JsonResponse['trackers'] = ast.literal_eval(result.docs[0].Trackers)
@@ -209,7 +210,7 @@ def UpdateLocation(user_data):
 
 
 def GetLocations(phone):
-
+    #use REDISEARCH on all data where iam the Tracker and get their location
     result=trackers_idx.search(phone)
     allusers=[]
     for row in result.docs:
@@ -222,13 +223,14 @@ def GetLocations(phone):
 
     #need to restric the number of elements sent to front end 
     #what if 500 users to 1 tracker??? UI will be clumsy
-    #GEO ADD can be added here for finding nearest entity
-    #use case emegency help
+    #post once Implementation we might want to see how we send list in chunks 
+    #transport corporations can have 1000's of buses
+
     return allusers, True
 
 def GetServices():
     result=trackerList_idx.search("@isTracker:True  @exposed:True")
-    # print(result) 
+    # seach and send all services using REDISSEARCH
     services=[]
     for row in result.docs:
         user=row.__dict__
@@ -236,6 +238,7 @@ def GetServices():
     return services, True
 
 def GetNeighbour(user_data):
+    # get the 5 nearest OTG service vehicle and send to user ( Serch API )
     longitude = user_data['location'][0]
     latitude = user_data['location'][1]
     service = user_data['service']

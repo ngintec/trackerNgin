@@ -1,5 +1,4 @@
-//requirests to be loaded afte jquery
-
+//requires to be loaded afte jquery
 let myStorage = window.localStorage;
 let csrftoken = null;
 let myUsername; //picked from credentials
@@ -8,17 +7,25 @@ let myToken; //picked from credentials
 let myAlias; //picked from credentials
 let myRole; //Am i tracker
 let myTrackers = [];
-let myEntities = [];
 let myuserlist={};//all users who are send me data
 var enabledUsers =[] ;//list of users i want to monitor ( filter option )
+
+let updateFrequency= 10; //in seconds we update every x miliseconds
+
 let myHostname = window.location.hostname;
 let port= window.location.port
 
 let env="dev"
 let base_url= `https://${myHostname}:${port}/${env}/`;
-let wss_url= `wss://${myHostname}:${port}/ws${env}`;
+// Websocket no longer used instead we use REDIS search using API call
+// reduces number of connections to server and saves money 
+// let wss_url= `wss://${myHostname}:${port}/ws${env}`;
 
-let updateFrequency= 10; //in seconds we update every x miliseconds
+
+
+
+
+//Authentication related Funtions below
 //store credentails into browser storage for reuse 
 function storeCred(cred){
 	obj=cred
@@ -42,23 +49,20 @@ function retrieveCred(){
 		return undefined;
 	}
 }
+
 //clear stored credentials from browser storage
 function clearCred(){
 	myStorage.removeItem('tracker_ngin');
 	location.href="/home";
 }
+
 //clear store my trackers into browser storage
 function storeTrackers(trackers){
 	obj=retrieveCred();
 	obj.Trackers=trackers;
 	storeCred(obj);
 }
-//dummy function not used now take care by myuserlist and enabledusers
-function storeEntities(entities){
-	obj=retrieveCred();
-	obj.Entities=entities;
-	storeCred(obj);
-}
+
 //run this when the site opens and take corresponding action
 function userAuth(){
 	obj=retrieveCred();
@@ -89,8 +93,10 @@ function userAuth(){
 		toggleModal(`userLoginModal`);
 	}
 }
+//Authentication related functions end here
 
 
+// UI base Scripts //
 //loading modal to impress user :)
 function toggleLoading(){
 	$body = $("body");
@@ -120,7 +126,7 @@ function toggleModal(id){
 	} else if ( id == "forgotPasswordModal"){
 		toggleModal('userLoginModal');
 	}
-	//clear all feedback messages
+	//clear all feedback messages on modal close
 	$(`.modal-footer div`).html("");
 }
 
@@ -130,7 +136,7 @@ function toggleMenu(){
 	$menu = $(`#myToggler .navbar-nav`);
 	$menu.toggleClass('showmenu');
 }
-
+// END UI Based Scripts//
 
 
 
@@ -153,7 +159,9 @@ function trackingSwitch() {
 }
 
 
-
+// MODAL based Submit actions //
+// Dont ask why somany fetch , i prefer SOLID principles as much as possible
+// having differenct interfaces and SOP , dont touch and screw-up what is working
 // login stuff here
 const loginForm = document.getElementById('login');
 loginForm.addEventListener('submit', userLogin);
@@ -526,7 +534,7 @@ function changeFrequency(event){
 	toggleLoading();
 }
 
-
+// function to send location to server for both tracker and trackee
 function sendData(jsonData){
 	fetch(`${base_url}location`,{
 			method: 'POST',
@@ -554,6 +562,7 @@ function sendData(jsonData){
 
 }
 
+// function to get location to server for tracker
 function getData(){
 	fetch(`${base_url}location`,{
 			method: 'GET',
@@ -615,11 +624,30 @@ function getServices(){
 
 
 }
+
 // stop processing and leave the user alone
 function stopLocation(){
 	// console.log("closing connection");
 	destroy_markers();
-	// navigator.geolocation.clearWatch(watchid);
 	clearInterval(watchid);
 	document.getElementById(`trackSwitch`).checked=false;
 }
+
+
+//start once every thing is loaded;
+$(document).ready(function(){
+	// handle the verify email stuff
+       let action = location.search.split("=")[1] ? location.search.split("=")[1] : undefined;
+       if (action){
+        if (action == "success"){
+          alert("Success, Now you can login");
+          location.search="";
+        } else {
+          alert("Failure, Some thing went wrong");
+          location.search="";
+        }
+       }
+    // Verify email done
+    // Now start the auth process
+    userAuth();
+});

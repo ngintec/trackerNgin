@@ -371,20 +371,5 @@
       <div class="loadingmodal"><!-- Place at bottom of page --></div>
       <script type="text/javascript" src="js/io.js" ></script>
       <script type="text/javascript" src="js/client.js"></script>
-      <script>
-        $(document).ready(function(){
-           let action = location.search.split("=")[1] ? location.search.split("=")[1] : undefined;
-           if (action){
-            if (action == "success"){
-              alert("Success, Now you can login");
-              location.search="";
-            } else {
-              alert("Failure, Some thing went wrong");
-              location.search="";
-            }
-           }
-            userAuth();
-        });
-      </script>
    </body>
 </html>

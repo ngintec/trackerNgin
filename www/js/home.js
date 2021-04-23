@@ -66,9 +66,6 @@ function recordPosition(position) {
 //clears the old location watchid
 function failure(err){
   alert("Error getting your position", err.message, "Will retry");
-  // clearInterval(watchid);
-  // watchid=setInterval(navigator.geolocation.getCurrentPosition(recordPosition, failure, options),5000);
-  // navigator.geolocation.clearWatch(watchid);
   navigator.geolocation.getCurrentPosition(recordPosition, failure, options);
 }
 
@@ -82,10 +79,6 @@ function plotPosition(data) {
   );
   //if iam a new user do below
   if (!myusers[data.from]){
-    //add user to myuserlist and set tracking as on by default
-    // myuserlist[data.alias]="on";
-    //add user to enabledusers and set tracking as on by default
-    // enabledUsers.push(data.alias);
     //perform actions to put him on the map
     markers[data.from] = new OpenLayers.Layer.Markers( "Markers" );
     myusers[data.from]=new OpenLayers.Marker(lonLat)
@@ -103,7 +96,8 @@ function plotPosition(data) {
   } else {
     //if its an old user check if he is enabled and then only plot his position;
       //clearmarker
-      // map.removeLayer(markers[data.from]);
+      // map.removeLayer(markers[data.from]);//to be removed after UAT
+      // clear popup
       map.removePopup(popups[data.from]);
       //redraw
       markers[data.from].addMarker(myusers[data.from]);
@@ -156,7 +150,6 @@ let port= window.location.port
 
 let env="dev"
 let base_url= `https://${myHostname}:${port}/${env}/`;
-// let wss_url= `wss://${myHostname}:${port}/ws${env}`;
 
 function toggleMenu(){
 	$menu = $(`#myToggler .navbar-nav`);
@@ -170,7 +163,7 @@ function toggleLoading(){
 }
 
 $(document).ready(function(){
-
+  //start the process after the page is fully loaded
     getLocation();
     getServices();
     $(`#searchForm`).submit((event)=>{
