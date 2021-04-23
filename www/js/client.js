@@ -33,7 +33,9 @@ function recordPosition(position) {
   myposition=[position.coords.longitude,position.coords.latitude];
   
   //send only data once
-  sendData({location: myposition});  
+  sendData({location: myposition}); 
+
+  //plot my position 
   let lonLat = new OpenLayers.LonLat( myposition[0] ,myposition[1] )
   .transform(
     new OpenLayers.Projection("EPSG:4326"), // transform from WGS 1984
@@ -61,6 +63,8 @@ function recordPosition(position) {
   map.addPopup(mypopup)
 }
 
+
+
 //hndles failures of the getCurrentPosisiton
 //retries infiniely to get the location
 //clears the old location watchid
@@ -71,6 +75,12 @@ function failure(err){
   // navigator.geolocation.clearWatch(watchid);
   watchid=navigator.geolocation.getCurrentPosition(recordPosition, failure, options);
 }
+
+
+
+
+
+
 // destroys all existing markers on the screen on disconnect
 function destroy_markers(){
   map.removeLayer(mymarker);
@@ -81,6 +91,12 @@ function destroy_markers(){
     removeUserMarkers(key);
   }
 }
+
+
+
+
+
+
 // separated function , so that can be called multiple times.
 function removeUserMarkers(key) {
   map.removeLayer(markers[key]);
@@ -88,6 +104,11 @@ function removeUserMarkers(key) {
   map.removePopup(popups[key]);
   popups[key]=undefined;
 }
+
+
+
+
+
 // plot other users on my map on gettting a message through websocket
 function plotPosition(data) {
   let userposition=data.location;

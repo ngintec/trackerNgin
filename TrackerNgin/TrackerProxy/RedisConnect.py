@@ -120,6 +120,7 @@ def Login_Users(user_data):
             JsonResponse['alias'] = result.docs[0].alias
             JsonResponse['email']=email
             JsonResponse['id']=phone
+            JsonResponse['isTracker']= result.docs[0].isTracker
             return JsonResponse, True
     else:
         return "Invalid email, phone and password combination", False

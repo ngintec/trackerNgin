@@ -8,6 +8,10 @@ body {
   background-color: #f4f4f4!important;
 }
 
+a, button {
+  cursor: pointer;
+}
+
 /*Nav br styling*/
 .bg-dark {
   background-color: #000000;
@@ -36,7 +40,24 @@ body {
   margin-block-start: 0.5em;
 }
 
+.nav-toggler {
+  display: none;
+}
+
 @media (max-width: 500px ){
+    .nav-toggler {
+      display: flex;
+      background-color: white;
+      border-radius: 10px;
+      width: 40px;
+      height: 40px;
+      margin: 10px;
+    }
+
+    .nav-toggler img {
+      width: 40px;
+      height: 40px;
+    }
 
     .navbar-collapse {
       position: fixed;
@@ -165,6 +186,12 @@ input:checked + .slider:before {
   -webkit-transform: translateX(33px);
   -ms-transform: translateX(33px);
   transform: translateX(33px);
+}
+/*only switch is visibe in mobile view*/
+@media (max-width: 500px ){
+  .nav-link i{
+    display: none;
+  }
 }
 /* End of tracking with on navbar*/
 /*END NAVBAR*/

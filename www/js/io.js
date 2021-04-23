@@ -6,6 +6,7 @@ let myUsername; //picked from credentials
 let myId; //picked from credentials
 let myToken; //picked from credentials
 let myAlias; //picked from credentials
+let myRole; //Am i tracker
 let myTrackers = [];
 let myEntities = [];
 let myuserlist={};//all users who are send me data
@@ -69,11 +70,19 @@ function userAuth(){
 		// myEntities=obj.Entities;
 		myAlias=obj.alias;
 		updateTrackers(myTrackers);//updates the trackers list 
+		myRole=obj.isTracker == "True" ? "tracker" : "trackee"; 
 		// updateEntities(myEntities);
 		$(`#usersDropdownMenuLink`).html(`+91-${myId}`);
 		$(`#changeAlias label`).html(`Current Alias: ${obj.alias}`);
 		$(`#changeFrequency label`).html(`Current Frequency: ${updateFrequency} seconds`);
 		$(`#myToggler`).removeClass("hide");
+		$(`.switch .slider`).html("OFF");
+		$(`.switch .slider`).css("text-align","right");
+		if (myRole == "tracker"){
+			$(`#myToggler .navbar-nav .tracker`).removeClass("hide");
+		} else {
+			$(`#myToggler .navbar-nav .trackee`).removeClass("hide");
+		}
 		// get my location and plot;
   		getLocation(); 
 	} else {
@@ -131,7 +140,11 @@ function trackingSwitch() {
 	if (document.getElementById(`trackSwitch`).checked){
 		$(`.switch .slider`).html("ON");
 		$(`.switch .slider`).css("text-align","left");
-		watchid=setInterval(()=>{ getData()},updateFrequency * 1000);
+		if ( myRole == "tracker"){
+			watchid=setInterval(()=>{ getData()},updateFrequency * 1000);
+		} else {
+			watchid=setInterval(()=>{ getLocation()},updateFrequency * 1000);
+		}
 	} else {
 		$(`.switch .slider`).html("OFF");
 		$(`.switch .slider`).css("text-align","right");
@@ -160,7 +173,6 @@ function userLogin(event){
 	    	}	
 		).then(response => {
 			response.json().then(data => {
-				console.log(data)
 			if (!response.ok){
 					return { data :data, state :false}
 				}
@@ -607,7 +619,7 @@ function getServices(){
 function stopLocation(){
 	// console.log("closing connection");
 	destroy_markers();
-	navigator.geolocation.clearWatch(watchid);
+	// navigator.geolocation.clearWatch(watchid);
 	clearInterval(watchid);
 	document.getElementById(`trackSwitch`).checked=false;
 }
