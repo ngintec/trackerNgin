@@ -62,13 +62,15 @@ class Users(APIView):
 			#set the alias as sent in login form
 			return_reponse= message
 			phone=user_data['id']
-			alias=user_data['alias']
-			message, status = RedisConnect.UpdateAlias(phone,alias)
-			if not status:
-				response = { "message" : "Login Failed", "Reason": message}
-				return Response(response,status=400)
-			#add alias here on success
-			return_reponse['alias']=user_data['alias']
+			# removed alias during login as its very alloying to 
+			# add it every login
+			# alias=user_data['alias']
+			# message, status = RedisConnect.UpdateAlias(phone,alias)
+			# if not status:
+			# 	response = { "message" : "Login Failed", "Reason": message}
+			# 	return Response(response,status=400)
+			# #add alias here on success
+			# return_reponse['alias']=user_data['alias']
 			return Response(return_reponse)
 		except:
 			logger.error("Some Exception occured in Logging user",exc_info=True)

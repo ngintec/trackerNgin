@@ -349,13 +349,29 @@ button {
   display: flex;
   margin-left: 1em;
 }
-.with-label p{
+.with-label a{
   font-size: 0.7em;
   white-space: nowrap;
   margin-top: 1.3em; 
 }
 .with-label input{
   margin-right: 1em;
+}
+
+.show-help {
+  font-size: 0.7em;
+  white-space: nowrap;
+}
+
+.show-help p {
+  display: none;
+}
+
+.show-help:hover p {
+  display: block;
+  word-wrap: break-word;
+  white-space: pre-wrap;
+  border: 1px solid black;
 }
 
 /*END modals*/

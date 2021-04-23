@@ -3,36 +3,42 @@ import logging, traceback, json, ast
 from redisearch import Client, TextField, IndexDefinition, Query
 from .utils import *
 from django.utils import timezone
+from django.conf import settings 
 
 logger=logging.getLogger("redis")
-#ng1ntEc@123
-# "redis://redis-14371.c57.us-east-1-4.ec2.cloud.redislabs.com:14371"
 
-# -- user ({Email, Phone, Password, Token, Verification_Code, alias, location, Trackers, email_verified, data:{last_login:, last_update}})
-RedisClient = redis.Redis(host='localhost', port=6379)
+RedisClient = redis.Redis(host=settings.REDIS_HOST, port=settings.REDIS_PORT, username=settings.REDIS_USER, password=settings.REDIS_PASSWORD)
+RdbmsSync = settings.RDBMS
+############################
+#Schema                    #
+############################
+#users {email, phone, password, Token, isTracker, exposed, searchable_email, alias, Verification_code, email_verified, Trackers, Location, last_update}
 
-#############################
-#InDexes for searches
+############################
+#InDexes redisearch        #
 ############################
 #FT.CREATE idx:users ON hash PREFIX 1 "users:" SCHEMA searchable_email TEXT SORTABLE phone TEXT SORTABLE
 #searchable email is created to avoid issues with "@" in email
-users_idx=Client('idx:users')
+users_idx = Client('idx:users', conn=RedisClient)
 #FT.CREATE idx:trackerlist ON hash PREFIX 1 "users:" SCHEMA isTracker TEXT SORTABLE exposed TEXT SORTABLE
 #this is used to send tokens to logged in users
-trackerList_idx=Client('idx:trackerlist')
+trackerList_idx = Client('idx:trackerlist', conn=RedisClient)
 #FT.CREATE idx:trackers ON hash PREFIX 1 "users:" SCHEMA Trackers TEXT SORTABLE
 # this is to search the hashes for all users who have tracker as me to be added in Locations(GET) api
-trackers_idx=Client('idx:trackers')
+trackers_idx = Client('idx:trackers', conn=RedisClient)
 ###############################
 
 
 def User_Exists(email, number):
     # we use REDISEARCH because we can verify both email and password in one go
-    result=users_idx.search("{}|{}".format(email, number))
-    if result.total > 0:
-        return True
-    else:
-        return False
+    try:
+        result=users_idx.search("{}|{}".format(email, number))
+        if result.total > 0:
+            return True
+        else:
+            return False
+    except:
+        traceback.print_exc()
 
 
 def Register_Users(user_data):
@@ -44,11 +50,13 @@ def Register_Users(user_data):
         if User_Exists(user_data['searchable_email'],key):
             return "User_Exists", False
 
+        # Start of Every key in schema is accounted for 
         # flag user as tracker or not, this is further used to get availible services
         if "isTracker" in user_data.keys():
             user_data['isTracker']= "True"
         else:
             user_data['isTracker']= "False"
+
         # flag service as exposed or not, if exposed , data will be avalible for search option
         # impacts only if Tracker 
         if "exposed" in user_data.keys():
@@ -56,24 +64,38 @@ def Register_Users(user_data):
         else:
             user_data['exposed']= "False"
 
+        #add alias during registration rather than login
+        if "alias" not in user_data.keys():
+            user_data['alias']= ""
+
         # if Doesnt exists perform hashing and generate tokens
         user_data['password']=HashPassword(user_data['password'])
         user_data['Verification_Code']=GenerateToken(100)
         user_data['Token']=GenerateToken(64)
         # Set other fields to 
         user_data['phone']=key
-        user_data['alias']=""
+        
         user_data['email_verified']="False"
         user_data['Trackers']="[]"
         user_data['Location']="[]"
         user_data['Token']=GenerateToken(64)
         user_data['last_update']= str(timezone.now())
 
+        # most important remove confirm password
+        del user_data['confirmpassword']
+        # End of every element in schema is fixed and has some thing
 
         #inset into Redis
         RedisClient.hset('users:{}'.format(key), mapping=user_data)
-        #pick the result and verify
-        #using REDISEARCH to avoid conversion from binary to json
+
+
+        # perhaps dump here to a RDBMS server 
+        # registration data is important
+        # updateDB(user_data)
+
+
+        # pick the result and verify
+        # using REDISEARCH to avoid conversion from binary to json
         result=users_idx.search("{}".format(key))
 
         if result.total == 0:
@@ -96,8 +118,10 @@ def Login_Users(user_data):
     email=user_data['email']
     phone=user_data['id']
     password=HashPassword(user_data['password'])
-
+    # verify if the user is registered
     if not RedisClient.hexists("users:{}".format(phone),'password'):
+        # perhaps not in rdbms check on rdbms and load if needed else 
+        # return not registered
         return "You are not a registered user please register", False
 
     db_pass= RedisClient.hget("users:{}".format(phone),'password').decode("utf-8")
@@ -142,6 +166,12 @@ def Verify_Email(code, phone):
         # for preventive reuse we update hash key
         new_code=GenerateToken(100)
         RedisClient.hset('users:{}'.format(phone), mapping={"email_verified":"True", "Verification_Code":new_code})
+
+        # perhaps dump here to a RDBMS server 
+        # registration data is important
+        # updateDB(user_data)
+
+
         return "Verify Success", True
     else:
         return "Verification Failed", False
@@ -149,6 +179,11 @@ def Verify_Email(code, phone):
 def UpdateAlias(phone, alias):
     #update the alias on redis
     RedisClient.hset("users:{}".format(phone),key='alias',value=alias)
+
+    # perhaps dump here to a RDBMS server 
+    # registration data is important
+    # updateDB(user_data)
+
     return "Updated Alias", True
 
 def UpdatePassword(user_data):
@@ -157,14 +192,28 @@ def UpdatePassword(user_data):
     token=GenerateToken(64)
     # for better security we update both token and password and force user to relogin to get the token
     RedisClient.hset("users:{}".format(phone),mapping={"Token":token, "password":password})
+
+    # perhaps dump here to a RDBMS server 
+    # registration data is important
+    # updateDB(user_data)
+
     return "Updated password", True
 
 def UpdateForgottenPassword(user_data):
     phone=user_data['id']
     #Generate a temp password and use it
+
+    if not RedisClient.hexists("users:{}".format(phone),'password'):
+        # perhaps not in rdbms check on rdbms and load if needed else 
+        # return not registered
+        return "You are not a registered user please register", False
+
     temp_password=GenerateToken(8)
     password=HashPassword(temp_password)
     token=GenerateToken(64)
+
+    # updateDB(user_data)
+
     RedisClient.hset("users:{}".format(phone),mapping={"Token":token, "password":password})
 
     return temp_password, True
@@ -179,7 +228,13 @@ def AddTracker(user_data):
     if tracker not in existing_trackers:
         existing_trackers.append(tracker)
     RedisClient.hset("users:{}".format(phone),key='Trackers',value=str(existing_trackers))
-    #ask them to invite, if not registered
+
+    # perhaps dump here to a RDBMS server 
+    # registration data is important
+    # updateDB(user_data)
+
+    #ask them to invite, if not registered the below is redundant 
+    #it starts from tracker registration :)
     if User_Exists('Unknown', tracker):
         return "Added trackers: {} ".format(tracker), existing_trackers, True
     else:
@@ -196,6 +251,11 @@ def DeleteTracker(user_data):
     if tracker in existing_trackers:
         existing_trackers.remove(tracker)
     RedisClient.hset("users:{}".format(phone),key='Trackers',value=str(existing_trackers))
+
+    # perhaps dump here to a RDBMS server 
+    # registration data is important
+    # updateDB(user_data)
+
     return "Removed trackers: {}".format(tracker), existing_trackers, True
 
 
@@ -231,6 +291,9 @@ def GetLocations(phone):
 def GetServices():
     result=trackerList_idx.search("@isTracker:True  @exposed:True")
     # seach and send all services using REDISSEARCH
+    # how do we sync here???
+    # count the number of records??
+    # rdbms
     services=[]
     for row in result.docs:
         user=row.__dict__

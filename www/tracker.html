@@ -78,7 +78,6 @@
               <form id="login" autocomplete="on">
                 <input class="form-control" autocomplete="on" type="text" name="id" placeholder="Mobile number" pattern="\d+" minlength="10" maxlength="10" required/>
                 <input class="form-control" autocomplete="on" type="email" name="email" placeholder="Email" pattern="^[a-zA-Z0-9+_.-]+@[a-zA-Z0-9.-]+$" required/>
-                <input class="form-control" autocomplete="on" type="text" name="alias" placeholder="Vehicle id ,Service Name, Your name" required/>
                 <input class="form-control" autocomplete="on" type="password" name="password" placeholder="current password" minlength="8" required/>
                 <div class="btn-holder">
                   <a  class="btn-link" href="#" onclick="toggleModal('userRegisterModal')">
@@ -114,9 +113,16 @@
                 <input class="form-control" autocomplete="on" type="text" name="id" placeholder="Mobile number" pattern="\d+" minlength="10" maxlength="10" required/>
                 <input class="form-control" autocomplete="on" type="email" name="email" placeholder="Email" pattern="^[a-zA-Z0-9+_.-]+@[a-zA-Z0-9.-]+$" required/>
                 <div class="with-label">
-                  <p>Is Tracker?</p><input class="form-control" autocomplete="on" type="checkbox" name="isTracker" checked  title="Are you a Service" />
-                  <p>Searchable ?</p><input class="form-control" autocomplete="on" type="checkbox" name="exposed" checked  title="Are you a Searchable by others"/>
+                  <a class="show-help">Is Tracker? 
+                    <p>Choose this option if you need a Tracker/Service login, other wise unselect.</p>
+                  </a>
+                  <input class="form-control" autocomplete="on" type="checkbox" name="isTracker" checked  title="Are you a Service" />
+                  <a class="show-help">Searchable ?
+                    <p>Choose this if you want normal users to serach location of your vehicle nearest to them.</p>
+                  </a>
+                  <input class="form-control" autocomplete="on" type="checkbox" name="exposed" checked  title="Are you a Searchable by others"/>
                 </div>
+                <input class="form-control" autocomplete="on" type="text" name="alias" placeholder="Vehicle id ,Service Name" required/>
                 <input class="form-control" autocomplete="on" type="password" name="password" placeholder="password" minlength="8" required/>
                 <input class="form-control" autocomplete="on" type="password" name="confirmpassword" placeholder="same as password" minlength="8" required/>
                 <div class="btn-holder">
