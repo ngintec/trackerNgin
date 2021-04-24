@@ -37,7 +37,8 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'rest_framework'
+    'rest_framework',
+    'TrackerNgin.TrackerProxy'
 ]
 
 MIDDLEWARE = [
@@ -73,7 +74,9 @@ WSGI_APPLICATION = 'TrackerNgin.wsgi.application'
 
 # Database
 # https://docs.djangoproject.com/en/3.2/ref/settings/#databases
-
+# Change to your bata base 
+# add/install drivers
+# provide the shema properbly based on documentation
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
@@ -81,6 +84,8 @@ DATABASES = {
     }
 }
 
+# we dont use this for auth but we still keep it for Djano and future
+AUTH_USER_MODEL = 'TrackerProxy.Users'
 
 # Password validation
 # https://docs.djangoproject.com/en/3.2/ref/settings/#auth-password-validators
@@ -132,4 +137,4 @@ REDIS_USER = "app"
 REDIS_PASSWORD = "ngin-TEC-123"
 
 # Should you sync with RDBMS
-RDBMS = False
+RDBMS = True

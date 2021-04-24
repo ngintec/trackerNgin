@@ -1,9 +1,12 @@
+import logging, json
+
 from django.shortcuts import render
 from django.http import JsonResponse, HttpResponseRedirect
+
 from rest_framework.response import Response
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.views import APIView
-import logging, json
+
 from TrackerNgin.TrackerProxy import RedisConnect
 from .utils import *
 from .permissions import LoggedIn
@@ -267,12 +270,28 @@ class Alias(APIView):
 			return Response({"message":"Internal Server Error", "Reason":"Technical Error"},status=500)	
 
 
-class Service(APIView):
+class UserService(APIView):
 	# Get a list of all exposed trackers
 	# Note trackers can hide their roooms to them selves and are not exposed to generic users
 	def get(self, request):
 		try:
-			message, result= RedisConnect.GetServices()
+			message, result= RedisConnect.GetUserServices()
+			if not result:
+				return Response({"message": "Some thing went Wrong", "Reason": message}, status=400)
+			return Response({"message": message})
+		except:
+			logger.error("Some Exception occured in Getting Services",exc_info=True)
+			pass
+			return Response({"message":"Internal Server Error", "Reason":"Technical Error"},status=500)
+
+
+
+class TrackeeService(APIView):
+	permission_classes=[LoggedIn]
+
+	def get(self, request):
+		try:
+			message, result= RedisConnect.GetTrackeeServices()
 			if not result:
 				return Response({"message": "Some thing went Wrong", "Reason": message}, status=400)
 			return Response({"message": message})
@@ -280,6 +299,8 @@ class Service(APIView):
 			logger.error("Some Exception occured in Getting Services",exc_info=True)
 			pass
 			return Response({"message":"Internal Server Error", "Reason":"Technical Error"},status=500)	
+
+
 
 class Search(APIView):
 	# Search for a OTG vehicle nearest to you based on service ( Tracker )

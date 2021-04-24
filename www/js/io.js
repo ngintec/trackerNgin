@@ -596,7 +596,7 @@ function getData(){
 
 //get all the trackers to populate the add tracker drop down
 function getServices(){
-	fetch(`${base_url}services`,{
+	fetch(`${base_url}services/trackee`,{
 			method: 'GET',
 			headers: {
 	      		'Content-Type': 'application/json',
