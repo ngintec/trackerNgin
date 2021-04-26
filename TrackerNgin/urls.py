@@ -20,5 +20,5 @@ from TrackerNgin import TrackerProxy
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('dev/', include('TrackerNgin.TrackerProxy.urls'))
+    path('api/', include('TrackerNgin.TrackerProxy.urls'))
 ]

@@ -36,15 +36,6 @@
 ####Simple Mobile app ( for trackees )
 ####Browser based interface ( mainly for trackers and users ).
 
-## Images 
-![Interface for  User]
-(./ss/user.jpg)
-![Interface for  Tracker]
-(./ss/tracker.jpg)
-![Interface for  Trackee]
-(./ss/trackee.jpg)
-![Mobile Interface for Trackee]
-(./ss/trackee_m.jpg)
 
 ## How it works
 #### There is a flag in the API app setting to sync with RDBMS [Refer install doc](./install.md) 
@@ -88,11 +79,14 @@ FT.CREATE idx:trackers ON hash PREFIX 1 "users:" SCHEMA Trackers TEXT SORTABLE
 	*only services flagged isTracker=True are shown in list*
 6. Once the user turns on  tracking switch.
 	1. If Trackee
+	![Mobile Interface for Trackee](./ss/trackee_m.jpg)
+	![Interface for  Trackee](./ss/trackee.jpg)
 		1. Fetches the location from the device ( monile , browser)
 		2. Makes an api call at the requested Update frequency ( default 10s )
 		*updateFrequency can be changed on the fly and is not stored in backend 
 		[screen](./ss/updateFrequency.jpg)*
 	2. If Tracker
+	![Interface for  Tracker](./ss/tracker.jpg)
 		1. Fetches the location from the device ( monile , browser)
 		2. Makes an api call at the requested Update frequency ( default 10s )
 		*updateFrequency can be changed on the fly and is not stored in backend*
@@ -102,8 +96,10 @@ FT.CREATE idx:trackers ON hash PREFIX 1 "users:" SCHEMA Trackers TEXT SORTABLE
 	1. Clear all stored credentials
 
 ## For Nomal users 
+![Interface for  User](./ss/user.jpg)
 1. No login is required
 2. They choose the service from list
 	*the list is obtined using redisearch idx:trackerlist*
 	*only services flagged as exposed  and isTracker=True are shown in list*
 3. on Search GEO radius is used for services with in 50KM and top 5 are returned
+![Search Result](./ss/search.jpg)
