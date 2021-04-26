@@ -148,7 +148,7 @@ function getServices(){
 let myHostname = window.location.hostname;
 let port= window.location.port
 
-let env="dev"
+let env="api"
 let base_url= `https://${myHostname}:${port}/${env}/`;
 
 function toggleMenu(){
