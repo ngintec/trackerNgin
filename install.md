@@ -99,8 +99,8 @@ After=network.target
 [Service]
 User=ubuntu
 Group=ubuntu
-WorkingDirectory=/opt/trackerNgin/trackeNgin/TrackerNgin
-ExecStart=/opt/tasenv/bin/uvicorn tasproj.asgi:application --port 10000 --uds /tmp/trackerngin.sock
+WorkingDirectory=/opt/trackerNgin/trackerNgin/
+ExecStart=/opt/trackerNgin/bin/uvicorn TrackerNgin.asgi:application --port 10000 --uds /tmp/trackerngin.sock
 Restart=always
 
 [Install]
