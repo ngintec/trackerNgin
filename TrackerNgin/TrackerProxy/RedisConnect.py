@@ -33,10 +33,16 @@ trackers_idx = Client('idx:trackers', conn=RedisClient)
 ###############################
 
 
-def User_Exists(email, number):
+def User_Exists(email, phone):
     # we use REDISEARCH because we can verify both email and password in one go
     try:
-        result=users_idx.search("{}|{}".format(email, number))
+        result=users_idx.search("{}|{}".format(email, phone))
+        #check if user exists in db if dbsync is enabled
+        if RdbmsSync:
+            db_count=Users.objects.filter(phone=phone, email=email).count()
+            if db_count > 0:
+                return True
+
         if result.total > 0:
             return True
         else:

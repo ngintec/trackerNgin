@@ -137,4 +137,4 @@ REDIS_USER = "app"
 REDIS_PASSWORD = "ngin-TEC-123"
 
 # Should you sync with RDBMS
-RDBMS = True
+RDBMS = False

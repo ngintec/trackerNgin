@@ -1,3 +1,6 @@
+[Back to readme](./readme.md)
+
+
 1. Install Venv
 ```
 sudo apt-get install python3
@@ -110,7 +113,7 @@ WantedBy=multi.user.target
 
 8. Reverse proxy setup
 
-refer to trackerngin.conf (create link here)
+refer to [trackerngin.conf](./trackerngin.conf)
 You will need to create a link or copy the file after creating the ssl certs to the nginx folders
 MACOS
 ``
@@ -123,6 +126,8 @@ ln -s /opt/trackerNgin/trackerNgin/trackerngin.conf /etc/nginx/sites-enabled/tra
 ```
 
 9. open https://localhost/tracker
+
+[Back to readme](./readme.md)
 
 
 
