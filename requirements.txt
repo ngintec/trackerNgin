@@ -1,6 +1,13 @@
+asgiref
+click
 Django
 djangorestframework
+h11
 hiredis
+pytz
 redis
 redisearch
+rmtest
+six
+sqlparse
 uvicorn
