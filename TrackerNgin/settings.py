@@ -135,6 +135,8 @@ REDIS_HOST = 'redis-14371.c57.us-east-1-4.ec2.cloud.redislabs.com'
 REDIS_PORT = 14371
 REDIS_USER = "app"
 REDIS_PASSWORD = "ngin-TEC-123"
+# you can also set export $REDIS_PASSWORD="ngin-TEC-123" and specify
+# REDIS_PASSWORD = os.environ['REDIS_PASSWORD']
 
 # Should you sync with RDBMS
 RDBMS = False
