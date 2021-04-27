@@ -3,7 +3,7 @@ import logging, json
 from django.shortcuts import render
 from django.http import JsonResponse, HttpResponseRedirect
 
-from rest_framework import status
+from rest_framework import status as response_status
 from rest_framework.response import Response
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.views import APIView
@@ -32,21 +32,21 @@ class Users(APIView):
 			status, message = ValidateInput(user_data)
 			# if succes take action
 			if not status:
-				return Response(response,status=status.HTTP_400_BAD_REQUEST)
+				return Response(response,status=response_status.HTTP_400_BAD_REQUEST)
 			#entries into redis
 			message, status= RedisConnect.Register_Users(user_data)
 			#Check if user registration failed
 			if not status:
 				#else respond with error
 				response = { "message" : "Could not register", "Reason": message}
-				return Response(response,status=status.HTTP_400_BAD_REQUEST)
+				return Response(response,status=response_status.HTTP_400_BAD_REQUEST)
 			#Send mail to confirm email id
 			message, status= SendRegisterMail(message['email'],message['Verification_Code'],message['phone'],request_origin)
 			#Check if some thing happens during email sending
 			if not status:
 				RedisConnect.Clear_User(user_data)
 				response = { "message" : "Could not register", "Reason": message}
-				return Response(response,status=status.HTTP_400_BAD_REQUEST)
+				return Response(response,status=response_status.HTTP_400_BAD_REQUEST)
 			else:
 				response = { "message" : "Registration Success, Please verify your email before Logging in( Check Yor Email, including Junk Folder )"}
 				return Response(response)
@@ -105,17 +105,17 @@ class ResetPassword(APIView):
 			status, message = ValidateInput(user_data)
 			# if succes take action
 			if not status:
-				return Response(response,status=400)
+				return Response(response,status=response_status.HTTP_400_BAD_REQUEST)
 			#if input is alright then update the password
 			message, result= RedisConnect.UpdatePassword(user_data)
 			if result:
 				return Response({"message": "Password successfully changed, Please logout and login"})
 			else:
-				return Response({"message": "Password Change failure", "Reason": message}, status=status.HTTP_400_BAD_REQUEST)
+				return Response({"message": "Password Change failure", "Reason": message}, status=response_status.HTTP_400_BAD_REQUEST)
 		except:
 			logger.error("Some Exception occured in Reset Password",exc_info=True)
 			pass
-			return Response({"message":"Internal Server Error", "Reason":"Technical Error"},status=status.HTTP_400_BAD_REQUEST)
+			return Response({"message":"Internal Server Error", "Reason":"Technical Error"},status=response_status.HTTP_400_BAD_REQUEST)
 
 class ForgotPassword(APIView):
 	#we generate a dummy password if user forgot hist password and send to his email id
@@ -126,17 +126,17 @@ class ForgotPassword(APIView):
 
 			message, result= RedisConnect.UpdateForgottenPassword(user_data)
 			if not result:
-				return Response({"message": "Some thing went Wrong", "Reason": message}, status=status.HTTP_400_BAD_REQUEST)
+				return Response({"message": "Some thing went Wrong", "Reason": message}, status=response_status.HTTP_400_BAD_REQUEST)
 
 			message, result= SendTempPassword(message, user_data['email'])
 			if result:
 				return Response({"message": "Please Check your email for temporary password(Including Junk Folder)"})
 			else:
-				return Response({"message": "Some thing went Wrong", "Reason": message}, status=status.HTTP_400_BAD_REQUEST)
+				return Response({"message": "Some thing went Wrong", "Reason": message}, status=response_status.HTTP_400_BAD_REQUEST)
 		except:
 			logger.error("Some Exception occured in Forgot password",exc_info=True)
 			pass
-			return Response({"message":"Internal Server Error", "Reason":"Technical Error"},status=status.HTTP_400_BAD_REQUEST)
+			return Response({"message":"Internal Server Error", "Reason":"Technical Error"},status=response_status.HTTP_400_BAD_REQUEST)
 
 
 class Trackers(APIView):
@@ -151,11 +151,11 @@ class Trackers(APIView):
 			# i dont send the id here so reat from authenticated header
 			user_data['id']= request.headers['id']
 			if user_data['id'] == user_data['Tracker']:
-				return Response({"message": "You cannot be your own tracker", "Reason": "Not Allowed"}, status=status.HTTP_400_BAD_REQUEST)
+				return Response({"message": "You cannot be your own tracker", "Reason": "Not Allowed"}, status=response_status.HTTP_400_BAD_REQUEST)
 
 			message, trackers, result= RedisConnect.AddTracker(user_data)
 			if not result:
-				return Response({"message": "Some thing went Wrong", "Reason": message}, status=status.HTTP_400_BAD_REQUEST)
+				return Response({"message": "Some thing went Wrong", "Reason": message}, status=response_status.HTTP_400_BAD_REQUEST)
 		
 			return Response({"message": message, "Trackers": trackers})
 		except:
@@ -170,11 +170,11 @@ class Trackers(APIView):
 			# i dont send the id here so reat from authenticated header
 			user_data['id']= request.headers['id']
 			if user_data['id'] == user_data['Tracker']:
-				return Response({"message": "You cannot be your own tracker", "Reason": "Not Allowed"}, status=status.HTTP_400_BAD_REQUEST)
+				return Response({"message": "You cannot be your own tracker", "Reason": "Not Allowed"}, status=response_status.HTTP_400_BAD_REQUEST)
 
 			message, trackers, result= RedisConnect.DeleteTracker(user_data)
 			if not result:
-				return Response({"message": "Some thing went Wrong", "Reason": message}, status=status.HTTP_400_BAD_REQUEST)
+				return Response({"message": "Some thing went Wrong", "Reason": message}, status=response_status.HTTP_400_BAD_REQUEST)
 		
 			return Response({"message": message, "Trackers": trackers})
 		except:
@@ -196,7 +196,7 @@ class Invite(APIView):
 
 			message, result= SendInviteMails(user_data['inviter'],user_data['email'], request_origin)
 			if not result:
-				return Response({"message": "Some thing went Wrong", "Reason": message}, status=status.HTTP_400_BAD_REQUEST)
+				return Response({"message": "Some thing went Wrong", "Reason": message}, status=response_status.HTTP_400_BAD_REQUEST)
 
 			return Response({"message": "Invite email has been sent on your behalf"})
 		except:
@@ -222,7 +222,7 @@ class Location(APIView):
 
 			message, result= RedisConnect.UpdateLocation(user_data)
 			if not result:
-				return Response({"message": "Some thing went Wrong", "Reason": message}, status=status.HTTP_400_BAD_REQUEST)
+				return Response({"message": "Some thing went Wrong", "Reason": message}, status=response_status.HTTP_400_BAD_REQUEST)
 			return Response({"message": message})
 		except:
 			logger.error("Some Exception occured in Updating Location",exc_info=True)
@@ -234,7 +234,7 @@ class Location(APIView):
 
 			message, result= RedisConnect.GetLocations(request.headers['id'])
 			if not result:
-				return Response({"message": "Some thing went Wrong", "Reason": message}, status=status.HTTP_400_BAD_REQUEST)
+				return Response({"message": "Some thing went Wrong", "Reason": message}, status=response_status.HTTP_400_BAD_REQUEST)
 			return Response({"message": message})
 		except:
 			logger.error("Some Exception occured in Updating Location",exc_info=True)
@@ -255,7 +255,7 @@ class Alias(APIView):
 
 			message, status = RedisConnect.UpdateAlias(phone,alias)
 			if not status:
-				return Response({"message": "Some thing went Wrong", "Reason": message}, status=status.HTTP_400_BAD_REQUEST)
+				return Response({"message": "Some thing went Wrong", "Reason": message}, status=response_status.HTTP_400_BAD_REQUEST)
 			return Response({"message": message , "alias": alias})
 		except:
 			logger.error("Some Exception occured in Getting Services",exc_info=True)
@@ -270,7 +270,7 @@ class UserService(APIView):
 		try:
 			message, result= RedisConnect.GetUserServices()
 			if not result:
-				return Response({"message": "Some thing went Wrong", "Reason": message}, status=status.HTTP_400_BAD_REQUEST)
+				return Response({"message": "Some thing went Wrong", "Reason": message}, status=response_status.HTTP_400_BAD_REQUEST)
 			return Response({"message": message})
 		except:
 			logger.error("Some Exception occured in Getting Services",exc_info=True)
@@ -286,7 +286,7 @@ class TrackeeService(APIView):
 		try:
 			message, result= RedisConnect.GetTrackeeServices()
 			if not result:
-				return Response({"message": "Some thing went Wrong", "Reason": message}, status=status.HTTP_400_BAD_REQUEST)
+				return Response({"message": "Some thing went Wrong", "Reason": message}, status=response_status.HTTP_400_BAD_REQUEST)
 			return Response({"message": message})
 		except:
 			logger.error("Some Exception occured in Getting Services",exc_info=True)
@@ -302,7 +302,7 @@ class Search(APIView):
 			user_data= request.data
 			message, result= RedisConnect.GetNeighbour(user_data)
 			if not result:
-				return Response({"message": "Some thing went Wrong", "Reason": message}, status=status.HTTP_400_BAD_REQUEST)
+				return Response({"message": "Some thing went Wrong", "Reason": message}, status=response_status.HTTP_400_BAD_REQUEST)
 			return Response({"message": message})
 		except:
 			logger.error("Some Exception occured in Getting Services",exc_info=True)
