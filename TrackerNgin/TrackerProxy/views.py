@@ -26,7 +26,7 @@ class Users(APIView):
 
 	def put(self, request):
 		try:
-			request_origin = request.META['HTTP_ORIGIN'] if 'HTTP_ORIGIN' in request.keys() else "locatorservices.ngintec.com"
+			request_origin = request.META['HTTP_ORIGIN'] if 'HTTP_ORIGIN' in request.META.keys() else "locatorservices.ngintec.com"
 			# validate the input
 			user_data=request.data
 			status, message = ValidateInput(user_data)
@@ -191,7 +191,7 @@ class Invite(APIView):
 
 	def post(self, request):
 		try:
-			request_origin = request.META['HTTP_ORIGIN'] if 'HTTP_ORIGIN' in request.keys() else "locatorservices.ngintec.com"
+			request_origin = request.META['HTTP_ORIGIN'] if 'HTTP_ORIGIN' in request.META.keys() else "locatorservices.ngintec.com"
 			user_data= request.data
 
 			message, result= SendInviteMails(user_data['inviter'],user_data['email'], request_origin)
