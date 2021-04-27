@@ -1,28 +1,28 @@
-# Why TrackerNgin
+# Why TrackerNgin 
 ### - [x] To help Services be on top of the location of their vehicles
 ### - [] Communicate with them
 ### - [x] To help users Find these service vehicles That is nearest to them.
 
 ## Key Terms 
 #### 1.The Tracker/Services : 
-######Ambulance Command Center
-######Public Transport Command Center
-######Police Vehicle Command Center
-######Vehicle Towing Command Center
-######Garbage Management Command Center
-####And more….
+##### Ambulance Command Center
+##### Public Transport Command Center
+##### Police Vehicle Command Center
+##### Vehicle Towing Command Center
+##### Garbage Management Command Center
+#### And more….
 
 
 #### 2.The Trackee:
-######Ambulance
-######Bus/Train/Metro
-######Police Vehicle
-######Towing Vehicle
-######Garbage management Vehicle
-####And More…….
+##### Ambulance
+##### Bus/Train/Metro
+##### Police Vehicle
+##### Towing Vehicle
+##### Garbage management Vehicle
+#### And More…….
 
 #### 3.The User:
-####Me and You
+#### Me and You
 
 
 ## How redis helps us
@@ -32,13 +32,13 @@
 ### - [] Redis pubsub works along with SSE  to perform webrtc calls ( it on mobile )
 
 ## Feeding data
-####Api calls to exsting GPS location providers
-####Simple Mobile app ( for trackees )
-####Browser based interface ( mainly for trackers and users ).
+#### Api calls to exsting GPS location providers
+#### Simple Mobile app ( for trackees )
+#### Browser based interface ( mainly for trackers and users ).
 
 
 ## How it works
-#### There is a flag in the API app setting to sync with RDBMS [Refer install doc](./install.md) 
+#### There is a flag in the API app setting to sync with RDBMS [Refer install doc](https://github.com/ngintec/trackerNgin/tree/master/install.md) 
 #### we have following FT indexes for RediSearch
 
 ```
@@ -53,9 +53,9 @@ FT.CREATE idx:trackers ON hash PREFIX 1 "users:" SCHEMA Trackers TEXT SORTABLE
 	*if exists send error*
 	2. We create an hash key  (users:"phone number of user") and upload all data
 	3. Data looks like
-	*users {email, phone, password, Token, isTracker, exposed, searchable_email, alias, Verification_Code, email_verified, Trackers, Location, last_update}*
-	*Trackers and Locations are arrays*
-	*password is sha512 hashed*
+	##### *users {email, phone, password, Token, isTracker, exposed, searchable_email, alias, Verification_Code, email_verified, Trackers, Location, last_update}*
+	##### *Trackers and Locations are arrays*
+	##### *password is sha512 hashed*
 	5. if RDBMS sync is on , data is written to rdbms else its all upto redis
 	4. Send Confirm email link to email
 	- [] To be done SMS 
@@ -66,40 +66,40 @@ FT.CREATE idx:trackers ON hash PREFIX 1 "users:" SCHEMA Trackers TEXT SORTABLE
 	3. if RDBMS sync is on , data is written to rdbms else its all upto redis
 3. Login 
 	1. User is authenticated
-	*check if user exists on redis*
-	*check if user exists in db if dbsync is enabled*
-	*if does exists send error*
-	*the authe happens on all 3 : phone, email and password*
-	*we use redis search here on idx:users*
+	##### *check if user exists on redis*
+	##### *check if user exists in db if dbsync is enabled*
+	##### *if does exists send error*
+	##### *the authe happens on all 3 : phone, email and password*
+	##### *we use redis search here on idx:users*
 	2. If exists on db and not on redis , load the request onto redis ( same as register )
 	3. If success send user details along with tokens ( phone, email, alias, token, isTracker)
 4. Load the UI 
 5. Trackee's need to add their trackers ( they can have multiple trackers ).
-	*the list is obtined using redisearch idx:trackerlist*
-	*only services flagged isTracker=True are shown in list*
+	##### *the list is obtined using redisearch idx:trackerlist*
+	##### *only services flagged isTracker=True are shown in list*
 6. Once the user turns on  tracking switch.
 	1. If Trackee
-	![Mobile Interface for Trackee](./ss/trackee_m.jpg)
-	![Interface for  Trackee](./ss/trackee.jpg)
+	![Mobile Interface for Trackee](https://github.com/ngintec/trackerNgin/tree/master/ss/trackee_m.jpg)
+	![Interface for  Trackee](https://github.com/ngintec/trackerNgin/tree/master/ss/trackee.jpg)
 		1. Fetches the location from the device ( monile , browser)
 		2. Makes an api call at the requested Update frequency ( default 10s )
-		*updateFrequency can be changed on the fly and is not stored in backend 
-		[screen](./ss/updateFrequency.jpg)*
+		##### *updateFrequency can be changed on the fly and is not stored in backend 
+		![screen](https://github.com/ngintec/trackerNgin/tree/master/ss/updateFrequency.jpg)*
 	2. If Tracker
-	![Interface for  Tracker](./ss/tracker.jpg)
+	![Interface for  Tracker](https://github.com/ngintec/trackerNgin/tree/master/ss/tracker.jpg)
 		1. Fetches the location from the device ( monile , browser)
 		2. Makes an api call at the requested Update frequency ( default 10s )
-		*updateFrequency can be changed on the fly and is not stored in backend*
+		##### *updateFrequency can be changed on the fly and is not stored in backend*
 		3. Also fetches the location of all Trackees from REDIS and puts markers on the graph.
-		*we use redis search here on idx:trackers*
+		##### *we use redis search here on idx:trackers*
 7. Logout
 	1. Clear all stored credentials
 
 ## For Nomal users 
-![Interface for  User](./ss/user.jpg)
+![Interface for  User](https://github.com/ngintec/trackerNgin/tree/master/ss/user.jpg)
 1. No login is required
 2. They choose the service from list
-	*the list is obtined using redisearch idx:trackerlist*
-	*only services flagged as exposed  and isTracker=True are shown in list*
+	##### *the list is obtained using redisearch idx:trackerlist*
+	##### *only services flagged as exposed  and isTracker=True are shown in list*
 3. on Search GEO radius is used for services with in 50KM and top 5 are returned
-![Search Result](./ss/search.jpg)
+![Search Result](https://github.com/ngintec/trackerNgin/tree/master/ss/search.jpg)
