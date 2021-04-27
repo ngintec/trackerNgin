@@ -84,7 +84,8 @@ FT.CREATE idx:trackers ON hash PREFIX 1 "users:" SCHEMA Trackers TEXT SORTABLE
 		1. Fetches the location from the device ( monile , browser)
 		2. Makes an api call at the requested Update frequency ( default 10s )
 		##### *updateFrequency can be changed on the fly and is not stored in backend 
-		![screen](https://github.com/ngintec/trackerNgin/tree/master/ss/updateFrequency.png)*
+		![screen]
+		(https://github.com/ngintec/trackerNgin/tree/master/ss/updateFrequency.png)*
 	2. If Tracker
 	![Interface for  Tracker](https://github.com/ngintec/trackerNgin/tree/master/ss/tracker.png)
 		1. Fetches the location from the device ( monile , browser)
@@ -96,10 +97,12 @@ FT.CREATE idx:trackers ON hash PREFIX 1 "users:" SCHEMA Trackers TEXT SORTABLE
 	1. Clear all stored credentials
 
 ## For Nomal users 
-![Interface for  User](https://github.com/ngintec/trackerNgin/tree/master/ss/user.png)
+![Interface for  User]
+(https://github.com/ngintec/trackerNgin/tree/master/ss/user.png)
 1. No login is required
 2. They choose the service from list
 	##### *the list is obtained using redisearch idx:trackerlist*
 	##### *only services flagged as exposed  and isTracker=True are shown in list*
 3. on Search GEO radius is used for services with in 50KM and top 5 are returned
-![Search Result](https://github.com/ngintec/trackerNgin/tree/master/ss/search.png)
+![Search Result]
+(https://github.com/ngintec/trackerNgin/tree/master/ss/search.png)
