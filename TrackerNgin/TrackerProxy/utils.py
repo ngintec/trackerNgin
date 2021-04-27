@@ -33,7 +33,7 @@ def ValidateInput(user_data):
 # handle various emails scenarios
 # register
 def SendRegisterMail(email_to, code, phone, request_origin):
-    url="{origin}/dev/verifyemail?uc={code}&id={id}".format(origin=request_origin,code=code, id=phone)
+    url="{origin}/api/verifyemail?uc={code}&id={id}".format(origin=request_origin,code=code, id=phone)
     body=GetRegisterEmailBody(email_to, url)
     subject="Registration Success for TrackerNgin"
     status, message=SendMail("vcbot@ngintec.com", [email_to], body, subject)

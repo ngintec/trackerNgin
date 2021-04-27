@@ -284,6 +284,9 @@ h3, h5 {
 	padding: 0 !important;
 	overflow: hidden !important;
 	text-align: center;
+  word-wrap: break-word;
+  width: 70px !important;
+  height: 4em !important;
 }
 /*Make sure attribution is in the bottom and not blocking view*/
 .olControlAttribution{

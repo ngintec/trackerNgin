@@ -128,7 +128,7 @@ function plotPosition(data) {
     popups[data.from]= new OpenLayers.Popup.Anchored(
         "Popup", 
         lonLat,
-        new OpenLayers.Size(50,15),
+        new OpenLayers.Size(75,30),
         data.alias,
         null,
         true
@@ -138,15 +138,18 @@ function plotPosition(data) {
     //if its an old user check if he is enabled and then only plot his position;
     if (enabledUsers.indexOf(data.alias) > -1 ){
       //clear marker to be removed after UAT
-      // map.removeLayer(markers[data.from]);
+      map.removeLayer(markers[data.from]);
       //Clear popups
       map.removePopup(popups[data.from]);
       //redraw
+      markers[data.from] = new OpenLayers.Layer.Markers( "Markers" );
+      myusers[data.from]=new OpenLayers.Marker(lonLat)
+      map.addLayer(markers[data.from]);
       markers[data.from].addMarker(myusers[data.from]);
       popups[data.from]= new OpenLayers.Popup.Anchored(
           "Popup", 
           lonLat,
-          new OpenLayers.Size(50,15),
+          new OpenLayers.Size(75,30),
           data.alias,
           null,
           true
