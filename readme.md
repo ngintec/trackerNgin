@@ -38,7 +38,7 @@
 
 
 ## How it works
-#### There is a flag in the API app setting to sync with RDBMS [Refer install doc](/install.md) 
+#### There is a flag in the API app setting to sync with RDBMS [Refer install doc](	/install.md) 
 #### we have following FT indexes for RediSearch
 
 ```
