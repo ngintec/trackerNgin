@@ -81,7 +81,7 @@ FT.CREATE idx:trackers ON hash PREFIX 1 "users:" SCHEMA Trackers TEXT SORTABLE
 	1. If Trackee
 	![Mobile Interface for Trackee](/ss/trackee_m.png)
 	![Interface for  Trackee](/ss/trackee.png)
-		1. Fetches the location from the device ( monile , browser)
+		1. Fetches the location from the device ( mobile , browser)
 		2. Makes an api call at the requested Update frequency ( default 60s )
 		##### *updateFrequency can be changed on the fly and is not stored in backend 
 		![screen](/ss/updateFrequency.png)*
