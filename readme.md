@@ -82,13 +82,13 @@ FT.CREATE idx:trackers ON hash PREFIX 1 "users:" SCHEMA Trackers TEXT SORTABLE
 	![Mobile Interface for Trackee](/ss/trackee_m.png)
 	![Interface for  Trackee](/ss/trackee.png)
 		1. Fetches the location from the device ( monile , browser)
-		2. Makes an api call at the requested Update frequency ( default 10s )
+		2. Makes an api call at the requested Update frequency ( default 60s )
 		##### *updateFrequency can be changed on the fly and is not stored in backend 
 		![screen](/ss/updateFrequency.png)*
 	2. If Tracker
 	![Interface for  Tracker](/ss/tracker.png)
-		1. Fetches the location from the device ( monile , browser)
-		2. Makes an api call at the requested Update frequency ( default 10s )
+		1. Fetches the location from the device ( mobile , browser)
+		2. Makes an api call at the requested Update frequency ( default 60s )
 		##### *updateFrequency can be changed on the fly and is not stored in backend*
 		3. Also fetches the location of all Trackees from REDIS and puts markers on the graph.
 		##### *we use redis search here on idx:trackers*

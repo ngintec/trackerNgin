@@ -10,7 +10,7 @@ let myTrackers = [];
 let myuserlist={};//all users who are send me data
 var enabledUsers =[] ;//list of users i want to monitor ( filter option )
 
-let updateFrequency= 10; //in seconds we update every x miliseconds
+let updateFrequency= 60; //in seconds we update every x miliseconds
 
 let myHostname = window.location.hostname;
 let port= window.location.port
@@ -111,11 +111,12 @@ function toggleModal(id){
 	//only if user modal is filtermodel then create a list of users with check box
 	//users with state value as on are checked and off as not checked
 	if ( id == "filterUserModal"){	
+		$(`#filterUsers #userHolder`).empty();
 		for (const [key, value] of Object.entries(myuserlist)){
 			if (value == "on"){
-				$(`#filterUsers`).append(`<input id="${key}" name="${key}" type="checkbox" checked><p>${key}</p>`)
+				$(`#filterUsers #userHolder`).append(`<div class="btn-holder"><input id="${key}" name="${key}" type="checkbox" checked>${key}</div>`)
 			} else {
-				$(`#filterUsers`).append(`<input id="${key}" name="${key}" type="checkbox"><p>${key}</p>`)
+				$(`#filterUsers #userHolder`).append(`<div class="btn-holder"><input id="${key}" name="${key}" type="checkbox">${key}</div>`)
 			}
 		}
 
@@ -229,7 +230,7 @@ function registerLogin(event){
 			}).then((apifeedback) => {
 				toggleLoading();
 				if (apifeedback.state){
-					$(`#registerfeedback`).html(apifeedback.data.message);
+					$(`#registerfeedback .b`).html(apifeedback.data.message);
 					registerForm.reset();	
 				} else {
 					$(`#registerfeedback`).html(`${apifeedback.data.message}, ${apifeedback.data.Reason}`);
@@ -425,7 +426,6 @@ function filterUsers(event){
 		if (enabledUsers.indexOf(key) == -1){
 			//users who are not enabled have a state off in myuserlist 
 			// and remove their markers
-			removeUserMarkers(key);
 			myuserlist[key]="off";
 		} 
   	}

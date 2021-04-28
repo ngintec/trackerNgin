@@ -113,6 +113,7 @@ ul.centering {
 li.navbar-brand {
 	font-size: 20px;
   padding-block-start: 1em;
+  margin-left: 0.5em; 
 }
 
 li a {
@@ -312,6 +313,11 @@ form {
 	padding: 10px;
 	justify-content: center;
 }
+/*for filter option*/
+.btn-holder input{
+  margin-right: 50px;
+}
+
 button {
 	font-size: 0.7em;
 
@@ -481,7 +487,7 @@ body.loading .loadingmodal {
     background-color: #ffffff;
     margin: 0px 5px;
     display: block;
-    color: #e4e4e4;
+    color: #4a4a4a;
   }
 
   .left-container {

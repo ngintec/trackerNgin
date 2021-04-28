@@ -97,9 +97,7 @@ function destroy_markers(){
 // separated function , so that can be called multiple times.
 function removeUserMarkers(key) {
   map.removeLayer(markers[key]);
-  markers[key]=undefined;
   map.removePopup(popups[key]);
-  popups[key]=undefined;
 }
 
 
@@ -117,7 +115,9 @@ function plotPosition(data) {
   //if iam a new user do below
   if (!myusers[data.from]){
     //add user to myuserlist and set tracking as on by default
-    myuserlist[data.alias]="on";
+    if ( Object.keys(myuserlist).indexOf(data.alias) == -1 ){
+      myuserlist[data.alias]="on";
+    }
     //add user to enabledusers and set tracking as on by default
     enabledUsers.push(data.alias);
     //perform actions to put him on the map
@@ -137,10 +137,13 @@ function plotPosition(data) {
   } else {
     //if its an old user check if he is enabled and then only plot his position;
     if (enabledUsers.indexOf(data.alias) > -1 ){
-      //clear marker to be removed after UAT
-      map.removeLayer(markers[data.from]);
-      //Clear popups
-      map.removePopup(popups[data.from]);
+      // try catch is needed for filtered and then unfiltered events
+      try{
+        map.removeLayer(markers[data.from]);
+        map.removePopup(popups[data.from]);
+      } catch {
+        
+      }
       //redraw
       markers[data.from] = new OpenLayers.Layer.Markers( "Markers" );
       myusers[data.from]=new OpenLayers.Marker(lonLat)
@@ -155,7 +158,14 @@ function plotPosition(data) {
           true
       );
       map.addPopup(popups[data.from])
-    } 
+    } else {
+      try{
+        map.removeLayer(markers[data.from]);
+        map.removePopup(popups[data.from]);
+      } catch {
+
+      }
+    }
     // not enabled users are already filtered in the filtering event;
   }
 }
