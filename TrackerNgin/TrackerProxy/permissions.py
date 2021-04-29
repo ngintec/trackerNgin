@@ -10,3 +10,11 @@ class LoggedIn(BasePermission):
         else:
             return False
 
+
+class EventSource(BasePermission):
+    def has_permission(self, request, view):
+        if request.GET.get('id', False) and request.GET.get('uc', False):
+            result=RedisConnect.TokenAuth(request.GET.get('id'),request.GET.get('uc'))
+            return result
+        else:
+            return False

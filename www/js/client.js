@@ -117,7 +117,9 @@ function plotPosition(data) {
     //add user to myuserlist and set tracking as on by default
     if ( Object.keys(myuserlist).indexOf(data.alias) == -1 ){
       myuserlist[data.alias]="on";
+      myuserMappings.push({"phone":data.from, "alias":data.alias});
     }
+
     //add user to enabledusers and set tracking as on by default
     enabledUsers.push(data.alias);
     //perform actions to put him on the map

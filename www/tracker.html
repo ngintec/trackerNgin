@@ -40,6 +40,7 @@
                 <a class="dropdown-item" href="#" onclick="toggleModal('addTrackerModal')">Add</a>
                 <a class="dropdown-item" href="#" onclick="toggleModal('viewTrackerModal')">View</a>
                 <a class="dropdown-item" href="#" onclick="toggleModal('deleteTrackerModal')">Remove</a>
+                <a class="dropdown-item" href="#" onclick="toggleModal('callModal')">Message</a>
               </div>
             </li>
             <li class="dropdown-toggle tracker hide">
@@ -49,7 +50,7 @@
               <div class="dropdown-menu">
                 <a class="dropdown-item" href="#" onclick="toggleModal('inviteModal')">Invite</a>
                 <a class="dropdown-item" href="#" onclick="toggleModal('filterUserModal')">Filter</a>
-                <a class="dropdown-item" href="#" onclick="toggleModal('deleteTrackerModal')">Call</a>
+                <a class="dropdown-item" href="#" onclick="toggleModal('callModal')">Message</a>
               </div>
             </li>
             <li class="dropdown-toggle">
@@ -265,6 +266,32 @@
         </div>
       </div>
 
+      <!-- call modal -->
+      <div id ="callModal" class="modal">
+        <div>
+          <div class="modal-content">
+            <div class="modal-header">
+              <h5 class="modal-title">Message</h5>
+              <a class="close" onclick="toggleModal('callModal')">
+                <span aria-hidden="true">&times;</span>
+              </a>
+            </div>
+            <div class="modal-body">
+              <form id="callUser" autocomplete="on">
+                <select id="UserList" class="col form-control" name="to"></select>
+                <textarea class="form-control" name="message" placeholder="Your message" rows = "5" required></textarea>
+                <div class="btn-holder">
+                  <button class="btn-primary" type="submit">Message User</button>
+                </div>
+              </form>
+            </div>
+            <div class="modal-footer justify-content-center text-center">
+              <div id="callfeedback"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
        <!-- forgot password modal -->
       <div id ="forgotPasswordModal" class="modal" tabindex="-1" role="dialog">
         <div class="modal-dialog modal-dialog-centered" role="document">
@@ -366,6 +393,26 @@
             </div>
             <div class="modal-footer justify-content-center text-center">
               <div id="changeFrequencyfeedback"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Meddage modal modal -->
+      <div id ="messageModal" class="modal" tabindex="-1" role="dialog">
+        <div class="modal-dialog modal-dialog-centered" role="document">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h5 class="modal-title">You got a message</h5>
+              <a class="close" onclick="toggleModal('messageModal')">
+                <span aria-hidden="true">&times;</span>
+              </a>
+            </div>
+            <div class="modal-body">
+              <div>
+                <p id="from"></p>
+                <p id="message"></p>
+              </div>
             </div>
           </div>
         </div>

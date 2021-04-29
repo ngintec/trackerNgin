@@ -1,4 +1,4 @@
-import logging, json
+import logging, json, time
 
 from django.shortcuts import render
 from django.http import JsonResponse, HttpResponseRedirect
@@ -309,3 +309,59 @@ class Search(APIView):
 			pass
 			return Response({"message":"Internal Server Error", "Reason":"Technical Error"},status=500)	
 
+
+from django.http import StreamingHttpResponse
+from TrackerNgin.TrackerProxy import RedisMqConnect 
+
+class Publish(APIView):
+	permission_classes=[LoggedIn]
+
+	def post(self, request):
+		phone=request.headers['id']
+		try:
+			user_data= request.data
+			user_data['from']=phone
+			result= RedisMqConnect.Publish(user_data)
+			if not result:
+				return Response({"message": "Some thing went Wrong", "Reason": message}, status=response_status.HTTP_400_BAD_REQUEST)
+			return Response({"message": "Messaged published (message will reach recipient/s only if he/she/they are online)"})
+		except:
+			logger.error("Some Exception occured in Getting Services",exc_info=True)
+			pass
+			return Response({"message":"Internal Server Error", "Reason":"Technical Error"},status=500)	
+
+
+class Consume(APIView):
+	permission_classes=[LoggedIn]
+
+	def get(self, request):
+		phone=request.headers['id']
+		try:
+			MsgQueue= RedisMqConnect.Subscribe(phone)
+			data = MsgQueue.get_message()
+			if data:
+				message=data['data'].decode("utf-8")
+			else:
+				message={"message":"None"}
+			return Response(message)
+		except:
+			logger.error("Some Exception occured in Getting Messages",exc_info=True)
+			pass
+			return Response({"message":"Internal Server Error", "Reason":"Technical Error"},status=500)	
+
+
+@permission_classes(['EventSource'])
+def Event(request):
+	phone=request.GET.get('id')
+	MsgQueue=RedisMqConnect.Subscribe(phone)
+	def event_stream():
+		while True:
+			data = MsgQueue.get_message()
+			if data:
+				message=data['data'].decode("utf-8")
+				print(message)
+			else:
+				message="{\"message\":\"None\"}"
+			yield 'data: {}\n\n'.format(message)			
+
+	return StreamingHttpResponse(event_stream(), content_type='text/event-stream')

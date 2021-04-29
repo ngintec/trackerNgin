@@ -8,6 +8,7 @@ let myAlias; //picked from credentials
 let myRole; //Am i tracker
 let myTrackers = [];
 let myuserlist={};//all users who are send me data
+let myuserMappings=[];
 var enabledUsers =[] ;//list of users i want to monitor ( filter option )
 
 let updateFrequency= 60; //in seconds we update every x miliseconds
@@ -126,6 +127,15 @@ function toggleModal(id){
 		toggleModal('userLoginModal');
 	} else if ( id == "forgotPasswordModal"){
 		toggleModal('userLoginModal');
+	} else if ( id == "callModal"){
+		$(`#callUser #UserList`).empty();
+		$(`#callUser #UserList`).append(`<option value="general-${myId}">All</option>`)
+		for (const user of myuserMappings){
+				$(`#callUser #UserList`).append(`<option value="${user.phone}">${user.alias}</option>`)
+		}
+		for ( const tracker of myTrackers){
+			$(`#callUser #UserList`).append(`<option value="${tracker}">${tracker}</option>`);
+		}
 	}
 	//clear all feedback messages on modal close
 	$(`.modal-footer div`).html("");
@@ -147,7 +157,10 @@ function trackingSwitch() {
 	if (document.getElementById(`trackSwitch`).checked){
 		$(`.switch .slider`).html("ON");
 		$(`.switch .slider`).css("text-align","left");
+		//event receiver
+		EventReceiver();
 		if ( myRole == "tracker"){
+			getLocation(); 
 			watchid=setInterval(()=>{ getData()},updateFrequency * 1000);
 		} else {
 			watchid=setInterval(()=>{ getLocation()},updateFrequency * 1000);
@@ -473,6 +486,46 @@ function inviteUser(event){
 		})
 }
 
+//Invite users
+const callUserForm = document.getElementById('callUser');
+callUserForm.addEventListener('submit', callUser);
+
+function callUser(event){
+	event.preventDefault();
+	toggleLoading();
+	const data = new FormData(event.target);
+	const jsonData = Object.fromEntries(data.entries());
+	jsonData.inviter = myUsername;
+
+	fetch(`${base_url}publish`,{
+			method: 'POST',
+			headers: {
+	      		'Content-Type': 'application/json',
+	      		'id':myId,
+	      		'token':myToken
+	    		},
+	    	body: JSON.stringify(jsonData)
+	    	}
+		).then(response => {
+			response.json().then(data => {
+			if (!response.ok){
+					return { data :data, state :false}
+				}
+			else{
+					return { data :data, state :true}
+				}
+			}).then((apifeedback) => {
+				toggleLoading();
+				if (apifeedback.state){
+					$(`#callfeedback`).html(apifeedback.data.message);	
+					inviteUserForm.reset();
+				} else {
+					$(`#callfeedback`).html(`${apifeedback.data.message}, ${apifeedback.data.Reason}`);
+				}
+		});
+		})
+}
+
 //change user alias
 const changeAliasForm = document.getElementById('changeAlias');
 changeAliasForm.addEventListener('submit', changeAlias);
@@ -600,6 +653,8 @@ function getServices(){
 			method: 'GET',
 			headers: {
 	      		'Content-Type': 'application/json',
+	      		'id':myId,
+	      		'token':myToken
 	      		},
 	    	}
 		).then(response => {
@@ -631,6 +686,33 @@ function stopLocation(){
 	destroy_markers();
 	clearInterval(watchid);
 	document.getElementById(`trackSwitch`).checked=false;
+	source.close();
+}
+
+//sse 
+let source;
+function EventReceiver(){
+	source = new EventSource(`${base_url}event?uc=${myToken}&id=${myId}`)
+	source.onmessage = function(event) {
+		message= JSON.parse(event.data);
+		if (message.message != "None") {
+			console.log(event)
+			message= JSON.parse(event.data);
+			toggleModal('messageModal');
+			$(`#messageModal #from`).empty();
+			$(`#messageModal #from`).html(`From : ${message.from}`);
+			$(`#messageModal #message`).empty();
+			$(`#messageModal #message`).html(`Message : ${message.message}`)
+	  	}
+	};
+	source.onopen = () => {
+		console.log("opened");
+	}
+
+	source.onerror = function(event) {
+		source.close();
+	 	// setTimeout(()=>EventReceiver(), 10000);
+	};
 }
 
 
