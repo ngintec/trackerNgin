@@ -81,25 +81,25 @@ trackers_idx = Client('idx:trackers', conn=RedisClient)
 		RedisClient.hset('users:{}'.format(key), mapping=user_data)
 		```
 	3. Data looks like
-		- *users {
-				email: text, as in id@domain.com
-				phone: text, 
-				password: text ( hashed ),
-				Token: text , 
-				isTracker: "True" or "False" , 
-				exposed: "True" or "False" , 
-				searchable_email: stored as fn_ln_domain_com
-				alias: text , 
-				Verification_Code: text,(random generated)
-				email_verified: "True" or "False", 
-				Trackers: "[list of trackers]", 
-				Location: "[longi, lati]", 
-				last_update: date as string}*
-		- *Trackers and Locations are arrays stored as string*
-		- *password is sha512 hashed*
+		- users {
+			- email: text, as in id@domain.com,
+			- phone: text, 
+			- password: text ( hashed ),
+			- Token: text , 
+			- isTracker: "True" or "False" , 
+			- exposed: "True" or "False" , 
+			- searchable_email: stored as fn_ln_domain_com,
+			- alias: text , 
+			- Verification_Code: text (random generated),
+			- email_verified: "True" or "False", 
+			- Trackers: "[list of trackers]", 
+			- Location: "[longi, lati]", 
+			- last_update: date as string
+			}
+		- Trackers and Locations are arrays stored as string
+		- password is sha512 hashed
 	5. if RDBMS sync is on , data is written to rdbms else its all upto redis
 	4. Send Confirm email link to email
-	- [] To be done SMS 
 
 
 2. VerifyEmail
