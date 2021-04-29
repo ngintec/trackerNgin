@@ -5,25 +5,25 @@
 ### - To help users Find these service vehicles That is nearest to them.
 
 ## Key Terms 
-#### 1.The Tracker/Services : 
-##### Ambulance Command Center
-##### Public Transport Command Center
-##### Police Vehicle Command Center
-##### Vehicle Towing Command Center
-##### Garbage Management Command Center
-#### And more….
+#### 1. The Tracker/Services : 
+	- Ambulance Command Center
+	- Public Transport Command Center
+	- Police Vehicle Command Center
+	- Vehicle Towing Command Center
+	- Garbage Management Command Center
+	- And more….
 
 
-#### 2.The Trackee:
+#### 2. The Trackee:
 ##### Ambulance
-##### Bus/Train/Metro
-##### Police Vehicle
-##### Towing Vehicle
-##### Garbage management Vehicle
-#### And More…….
+	- Bus/Train/Metro
+	- Police Vehicle
+	- Towing Vehicle
+	- Garbage management Vehicle
+	- And More…….
 
-#### 3.The User:
-#### Me and You
+#### 3. The User:
+	- Me and You
 
 ## Key features:
 #### 1. One to many and many to one tracking
