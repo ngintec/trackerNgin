@@ -226,8 +226,9 @@ trackers_idx = Client('idx:trackers', conn=RedisClient)
 		```
 		trackerList_idx.search("@isTracker:True  @exposed:True")
 		```
+		 
 		- *only services flagged as exposed  and isTracker=True are shown in list*
-		
+
 3. on Search GEO radius is used for services with in 50KM and top 5 are returned
 	```
 	#below longitude and latitude is of the searching user
