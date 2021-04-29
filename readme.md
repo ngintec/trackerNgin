@@ -1,8 +1,8 @@
 # Why TrackerNgin 
-### - To help Services be on top 
-### 	- With location of their vehicles
-### 	- Communicate with Trackee
-### - To help users Find these service vehicles That is nearest to them.
+- To help Public and emergency Services 
+ 	- With location of their vehicles
+	- Communicate with Trackee
+- To help users Find these service vehicles That is nearest to them.
 
 ## Key Terms 
 #### 1. The Tracker/Services : 
