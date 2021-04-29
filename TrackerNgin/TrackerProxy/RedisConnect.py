@@ -162,6 +162,8 @@ def Login_Users(user_data):
         return "Invalid email, phone and password combination", False
     else:
         # we send all the require info for some authorization in the front end
+        if result.docs[0].email_verified == "False":
+            return "You have not verified your email", False
         JsonResponse={}
         JsonResponse['token'] = result.docs[0].Token
         JsonResponse['trackers'] = ast.literal_eval(result.docs[0].Trackers)

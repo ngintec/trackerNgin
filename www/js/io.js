@@ -697,26 +697,26 @@ function stopLocation(){
 //sse 
 let source;
 function EventReceiver(){
-	source = new EventSource(`${base_url}event?uc=${myToken}&id=${myId}`)
-	source.onmessage = function(event) {
-		message= JSON.parse(event.data);
-		if (message.message != "None") {
-			message= JSON.parse(event.data);
-			toggleModal('messageModal');
-			$(`#messageModal #from`).empty();
-			$(`#messageModal #from`).html(`From : ${message.from}`);
-			$(`#messageModal #message`).empty();
-			$(`#messageModal #message`).html(`Message : ${message.message}`)
-	  	}
-	};
-	source.onopen = () => {
-		console.log("opened");
-	}
+	// source = new EventSource(`${base_url}event?uc=${myToken}&id=${myId}`)
+	// source.onmessage = function(event) {
+	// 	message= JSON.parse(event.data);
+	// 	if (message.message != "None") {
+	// 		message= JSON.parse(event.data);
+	// 		toggleModal('messageModal');
+	// 		$(`#messageModal #from`).empty();
+	// 		$(`#messageModal #from`).html(`From : ${message.from}`);
+	// 		$(`#messageModal #message`).empty();
+	// 		$(`#messageModal #message`).html(`Message : ${message.message}`)
+	//   	}
+	// };
+	// source.onopen = () => {
+	// 	console.log("opened");
+	// }
 
-	source.onerror = function(event) {
-		source.close();
-	 	// setTimeout(()=>EventReceiver(), 10000);
-	};
+	// source.onerror = function(event) {
+	// 	source.close();
+	//  	// setTimeout(()=>EventReceiver(), 10000);
+	// };
 }
 
 
