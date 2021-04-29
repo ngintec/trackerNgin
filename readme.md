@@ -71,12 +71,14 @@ trackers_idx = Client('idx:trackers', conn=RedisClient)
 1. Register 
 	1. User enters details and submits
 		- *check if user exists on redis*
-		```users_idx.search("{}|{}".format(email, phone))
+		```
+		users_idx.search("{}|{}".format(email, phone))
 		```
 		- *check if user exists in db if dbsync is enabled*
 		- *if exists send error*
 	2. We create an hash key  (users:"phone number of user") and upload all data
-		```RedisClient.hset('users:{}'.format(key), mapping=user_data)
+		```
+		RedisClient.hset('users:{}'.format(key), mapping=user_data)
 		```
 	3. Data looks like
 		- *users {
@@ -102,7 +104,8 @@ trackers_idx = Client('idx:trackers', conn=RedisClient)
 
 2. VerifyEmail
 	1. The user clicks on the link Verification_Code is changed to a new one ( To avoid reuse ).
-	```db_Veri_Code= RedisClient.hget("users:{}".format(phone),'Verification_Code')
+	```
+	db_Veri_Code= RedisClient.hget("users:{}".format(phone),'Verification_Code')
 	 ```
 	3. if codes match email_verified is set to True and 
 	```
@@ -120,7 +123,9 @@ trackers_idx = Client('idx:trackers', conn=RedisClient)
 		```
 		- *check if user exists in db if dbsync is enabled*
 		- *if in db and not un redis pull gfrom dn and add*
-		```RedisClient.hset('users:{}'.format(phone), mapping=user_data)```
+		```
+		RedisClient.hset('users:{}'.format(phone), mapping=user_data)
+		```
 		- *if does exists send error*
 		- *the authe happens on all 3 : phone, email and password*
 	3. If success send user details along with tokens ( phone, email, alias, token, isTracker)
@@ -134,7 +139,9 @@ trackers_idx = Client('idx:trackers', conn=RedisClient)
 	![screen](/ss/usersettings.png) 
 
 5. For All calls needing registered user authentication is done based on token and id
-	```RedisClient.hget("users:{}".format(phone),'Token')```
+	```
+	RedisClient.hget("users:{}".format(phone),'Token')
+	```
 
 6. Once the user turns on  tracking switch.
 
@@ -205,7 +212,9 @@ trackers_idx = Client('idx:trackers', conn=RedisClient)
 1. No login is required
 2. They choose the service from list
 		- *the list is obtained using redisearch idx:trackerlist*
-		```trackerList_idx.search("@isTracker:True  @exposed:True")```
+		```
+		trackerList_idx.search("@isTracker:True  @exposed:True")
+		```
 		- *only services flagged as exposed  and isTracker=True are shown in list*
 3. on Search GEO radius is used for services with in 50KM and top 5 are returned
 	```
