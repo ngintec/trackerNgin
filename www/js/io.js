@@ -121,9 +121,11 @@ function toggleModal(id){
 			}
 		}
 
-	} else if (id == "addTrackerModal"){
-		getServices();
-	} else if ( id == "userRegisterModal"){
+	} 
+	// else if (id == "addTrackerModal"){
+	// 	getServices();
+	// } 
+	else if ( id == "userRegisterModal"){
 		toggleModal('userLoginModal');
 	} else if ( id == "forgotPasswordModal"){
 		toggleModal('userLoginModal');
@@ -696,7 +698,6 @@ function EventReceiver(){
 	source.onmessage = function(event) {
 		message= JSON.parse(event.data);
 		if (message.message != "None") {
-			console.log(event)
 			message= JSON.parse(event.data);
 			toggleModal('messageModal');
 			$(`#messageModal #from`).empty();

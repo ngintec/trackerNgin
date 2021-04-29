@@ -153,7 +153,8 @@
             </div>
             <div class="modal-body">
               <form id="addTracker" autocomplete="on">
-                <select id="addTrackerList" class="col form-control" name="Tracker"></select>
+                <!-- <select id="addTrackerList" class="col form-control" name="Tracker"></select> -->
+                <input class="form-control" autocomplete="on" type="text" name="Tracker" placeholder="Registered Mobile number of Tracker/service" pattern="\d+" minlength="10" maxlength="10" required/>
                 <div class="btn-holder">
                   <button class="btn-primary" type="submit">Add Tracker</button>
                 </div>
@@ -178,7 +179,7 @@
             </div>
             <div class="modal-body">
               <form id="getTracker" autocomplete="on">
-                <select id="myTrackerList" class="col" readonly multiple></select>
+                <select class="form-control" id="myTrackerList" class="col" readonly multiple></select>
               </form>
             </div>
             <div class="modal-footer justify-content-center text-center">
