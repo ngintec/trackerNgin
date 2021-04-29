@@ -56,7 +56,7 @@
 ############################
 #InDexes redisearch        #
 ############################
-#FT.CREATE idx:users ON hash PREFIX 1 "users:" SCHEMA searchable_email TEXT SORTABLE phone TEXT SORTABLE
+#FT.CREATE idx:users ON hash PREFIX 1 "users:" SCHEMA searchable_email TEXT SORTABLE phone TEXT SORTABLE password TEXT SORTABLE
 #searchable email is created to avoid issues with "@" in email
 users_idx = Client('idx:users', conn=RedisClient)
 #FT.CREATE idx:trackerlist ON hash PREFIX 1 "users:" SCHEMA isTracker TEXT SORTABLE exposed TEXT SORTABLE
@@ -136,8 +136,8 @@ trackers_idx = Client('idx:trackers', conn=RedisClient)
 
 
 
-4. Load the UI 
-	![screen](/ss/usersettings.png) 
+4. Load the UI
+	-  ![screen](/ss/usersettings.png) 
 
 5. For All calls needing registered user authentication is done based on token and id
 	```
@@ -147,10 +147,10 @@ trackers_idx = Client('idx:trackers', conn=RedisClient)
 6. Once the user turns on  tracking switch.
 
 	1. Trackee
-	![Mobile Interface for Trackee](/ss/trackee_m.png)
-	![Interface for  Trackee](/ss/trackee.png)
+		- ![Mobile Interface for Trackee](/ss/trackee_m.png)
+		- ![Interface for  Trackee](/ss/trackee.png)
 		- Trackee's need to add their trackers .they can have multiple trackers.
-			![screen](/ss/addtracker.png) ![screen](/ss/viewtrackers.png) ![screen](/ss/deletetracker.png)
+			- ![screen](/ss/addtracker.png) ![screen](/ss/viewtrackers.png) ![screen](/ss/deletetracker.png)
 
 			```
 			#fetch existing trackers list and add the new one to list
@@ -170,7 +170,7 @@ trackers_idx = Client('idx:trackers', conn=RedisClient)
 			RedisClient.hset("users:{}".format(phone),key='Location',value=str(location))
 			```
 			- *updateFrequency can be changed on the fly and is not stored in backend* 
-		![screen](/ss/updateFrequency.png)
+			- ![screen](/ss/updateFrequency.png)
 
 		- Trackee can update alias --> this is valid when same drivers drive different bus numbers.
 		![screen](/ss/updatealias.png)
@@ -179,7 +179,7 @@ trackers_idx = Client('idx:trackers', conn=RedisClient)
 		```
 
 	2. Tracker
-		![Interface for  Tracker](/ss/tracker.png)
+		- ![Interface for  Tracker](/ss/tracker.png)
 
 		- Fetches the location from the device ( mobile , browser)
 
@@ -196,7 +196,7 @@ trackers_idx = Client('idx:trackers', conn=RedisClient)
 			```
 
 		- Tracker can invite users and Filter from the list of current users whom he want to see.
-			![screen](/ss/invite.png) ![screen](/ss/filter.png)
+			- ![screen](/ss/invite.png) ![screen](/ss/filter.png)
 
 
 7. Tracker and Trackee can message each other and other ( all ) in case of emergencies.
@@ -211,7 +211,7 @@ trackers_idx = Client('idx:trackers', conn=RedisClient)
 	- Note: Each user subscribes to 2 channels , one his own channel(his phone number), and one generic channel(generic-"trackerphone") for tracker
 		- Phone channel is used to send 1 to 1 message
 		- genereric channel is used to send broadcast message
-	![screen](/ss/send.png) ![screen](/ss/receive.png)
+	- ![screen](/ss/send.png) ![screen](/ss/receive.png)
 
 
 8. Logout
@@ -219,7 +219,7 @@ trackers_idx = Client('idx:trackers', conn=RedisClient)
 
 ## For Nomal users 
 
-![Interface for  User](/ss/user.png)
+- ![Interface for  User](/ss/user.png)
 
 1. No login is required
 
@@ -239,4 +239,4 @@ trackers_idx = Client('idx:trackers', conn=RedisClient)
 	RedisClient.georadius(service, longitude, latitude, 50, unit="km", withdist=True, withcoord=True, count=5, sort="ASC")
 	```
 
-	![Search Result](/ss/search.png)
+	- ![Search Result](/ss/search.png)
