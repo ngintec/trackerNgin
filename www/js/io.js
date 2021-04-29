@@ -54,6 +54,9 @@ function retrieveCred(){
 //clear stored credentials from browser storage
 function clearCred(){
 	myStorage.removeItem('tracker_ngin');
+	try{
+		source.close();
+	} catch{}
 	location.href="/home";
 }
 

@@ -51,21 +51,49 @@
 #### There is a flag in the API app setting to sync with RDBMS [Refer install doc](	/install.md) 
 #### we have following FT indexes for RediSearch
 
+###Note the indexes and how they are called
 ```
-FT.CREATE idx:users ON hash PREFIX 1 "users:" SCHEMA searchable_email TEXT SORTABLE phone TEXT SORTABLE
-FT.CREATE idx:trackerlist ON hash PREFIX 1 "users:" SCHEMA isTracker TEXT SORTABLE exposed TEXT SORTABLE
-FT.CREATE idx:trackers ON hash PREFIX 1 "users:" SCHEMA Trackers TEXT SORTABLE
+############################
+#InDexes redisearch        #
+############################
+#FT.CREATE idx:users ON hash PREFIX 1 "users:" SCHEMA searchable_email TEXT SORTABLE phone TEXT SORTABLE
+#searchable email is created to avoid issues with "@" in email
+users_idx = Client('idx:users', conn=RedisClient)
+#FT.CREATE idx:trackerlist ON hash PREFIX 1 "users:" SCHEMA isTracker TEXT SORTABLE exposed TEXT SORTABLE
+#this is used to send tokens to logged in users
+trackerList_idx = Client('idx:trackerlist', conn=RedisClient)
+#FT.CREATE idx:trackers ON hash PREFIX 1 "users:" SCHEMA Trackers TEXT SORTABLE
+# this is to search the hashes for all users who have tracker as me to be added in Locations(GET) api
+trackers_idx = Client('idx:trackers', conn=RedisClient)
+###############################
 ```
 
 1. Register 
 	1. User enters details and submits
 		- *check if user exists on redis*
+		```users_idx.search("{}|{}".format(email, phone))
+		```
 		- *check if user exists in db if dbsync is enabled*
 		- *if exists send error*
 	2. We create an hash key  (users:"phone number of user") and upload all data
+		```RedisClient.hset('users:{}'.format(key), mapping=user_data)
+		```
 	3. Data looks like
-		- *users {email, phone, password, Token, isTracker, exposed, searchable_email, alias, Verification_Code, email_verified, Trackers, Location, last_update}*
-		- *Trackers and Locations are arrays*
+		- *users {
+				email: text, as in id@domain.com
+				phone: text, 
+				password: text ( hashed ),
+				Token: text , 
+				isTracker: "True" or "False" , 
+				exposed: "True" or "False" , 
+				searchable_email: stored as fn_ln_domain_com
+				alias: text , 
+				Verification_Code: text,(random generated)
+				email_verified: "True" or "False", 
+				Trackers: "[list of trackers]", 
+				Location: "[longi, lati]", 
+				last_update: date as string}*
+		- *Trackers and Locations are arrays stored as string*
 		- *password is sha512 hashed*
 	5. if RDBMS sync is on , data is written to rdbms else its all upto redis
 	4. Send Confirm email link to email
@@ -74,7 +102,12 @@ FT.CREATE idx:trackers ON hash PREFIX 1 "users:" SCHEMA Trackers TEXT SORTABLE
 
 2. VerifyEmail
 	1. The user clicks on the link Verification_Code is changed to a new one ( To avoid reuse ).
-	3. email_verified is set to True and 
+	```db_Veri_Code= RedisClient.hget("users:{}".format(phone),'Verification_Code')
+	 ```
+	3. if codes match email_verified is set to True and 
+	```
+	RedisClient.hset('users:{}'.format(phone), mapping={"email_verified":"True", "Verification_Code":new_code})
+	```
 	2. Success and failure message given as required
 	3. if RDBMS sync is on , data is written to rdbms else its all upto redis
 
@@ -82,17 +115,26 @@ FT.CREATE idx:trackers ON hash PREFIX 1 "users:" SCHEMA Trackers TEXT SORTABLE
 3. Login 
 	1. User is authenticated
 		- *check if user exists on redis*
+		```
+		RedisClient.hexists("users:{}".format(phone),'password')
+		```
 		- *check if user exists in db if dbsync is enabled*
+		- *if in db and not un redis pull gfrom dn and add*
+		```RedisClient.hset('users:{}'.format(phone), mapping=user_data)```
 		- *if does exists send error*
 		- *the authe happens on all 3 : phone, email and password*
-		- *we use redis search here on idx:users*
-	2. If exists on db and not on redis , load the request onto redis ( same as register )
 	3. If success send user details along with tokens ( phone, email, alias, token, isTracker)
+		- *we use redis search here on idx:users*
+		```
+		users_idx.search("{}|{}".format(searchable_email, phone))
+		```
 
 
 4. Load the UI 
 	![screen](/ss/usersettings.png) 
 
+5. For All calls needing registered user authentication is done based on token and id
+	```RedisClient.hget("users:{}".format(phone),'Token')```
 
 6. Once the user turns on  tracking switch.
 
@@ -100,28 +142,58 @@ FT.CREATE idx:trackers ON hash PREFIX 1 "users:" SCHEMA Trackers TEXT SORTABLE
 	![Mobile Interface for Trackee](/ss/trackee_m.png)
 	![Interface for  Trackee](/ss/trackee.png)
 		1. Trackee's need to add their trackers ( they can have multiple trackers ).
-			- *the list is obtined using redisearch idx:trackerlist*
 		![screen](/ss/addtracker.png) ![screen](/ss/viewtrackers.png) ![screen](/ss/deletetracker.png)
+		```
+		#fetch existing trackers and add to list
+		existing_trackers= ast.literal_eval(RedisClient.hget("users:{}".format(phone),"Trackers").decode("utf-8"))
+	    if tracker not in existing_trackers:
+	        existing_trackers.append(tracker)
+	    #Update back the list
+	    RedisClient.hset("users:{}".format(phone),key='Trackers',value=str(existing_trackers))
+		```
 		2. Fetches the location from the device ( mobile , browser)
 		3. Makes an api call at the requested Update frequency ( default 60s )
 			- *updateFrequency can be changed on the fly and is not stored in backend* 
+			```
+			RedisClient.hset("users:{}".format(phone),key='Location',value=str(location))
+			```
 		![screen](/ss/updateFrequency.png)
 		4. Trackee can update alias --> this is valid when same drivers drive different bus numbers.
 		![screen](/ss/updatealias.png)
+		```
+		RedisClient.hset("users:{}".format(phone),key='alias',value=alias)
+		```
 
 	2. Tracker
 	![Interface for  Tracker](/ss/tracker.png)
 		1. Fetches the location from the device ( mobile , browser)
 		2. Makes an api call at the requested Update frequency ( default 60s )
 			- *updateFrequency can be changed on the fly and is not stored in backend*
+			```
+			RedisClient.hset("users:{}".format(phone),key='Location',value=str(location))
+			```
 		3. Also fetches the location of all Trackees from REDIS and puts markers on the graph.
 			- *we use redis search here on idx:trackers*
+			```
+			trackers_idx.search(phone)
+			```
 		4. Tracker can invite users and Filter from the list of current users whom he want to see.
 		![screen](/ss/invite.png) ![screen](/ss/filter.png)
 
 
 7. Tracker and Trackee can message each other and other ( all ) in case of emergencies.
 	* uses redis pubsub and Server side events * 
+	```
+	#publish a message
+		RedisMq.publish(Msg_to, json.dumps(message))
+	#read a message
+		MsgQueue.get_message()
+	```
+
+	Note: Each user subscribes to 2 queues , one his own queue(his phone number), and one generic queue(generic-"trackerphone") for tracker
+		1. His queue is used to send 1 to one
+		2. genereric is used to send broadcast message
+	
 	![screen](/ss/send.png) ![screen](/ss/receive.png)
 
 
@@ -133,6 +205,11 @@ FT.CREATE idx:trackers ON hash PREFIX 1 "users:" SCHEMA Trackers TEXT SORTABLE
 1. No login is required
 2. They choose the service from list
 		- *the list is obtained using redisearch idx:trackerlist*
+		```trackerList_idx.search("@isTracker:True  @exposed:True")```
 		- *only services flagged as exposed  and isTracker=True are shown in list*
 3. on Search GEO radius is used for services with in 50KM and top 5 are returned
+	```
+	#below longitude and latitude is of the searching user
+	RedisClient.georadius(service, longitude, latitude, 50, unit="km", withdist=True, withcoord=True, count=5, sort="ASC")
+	```
 ![Search Result](/ss/search.png)
