@@ -217,21 +217,25 @@ trackers_idx = Client('idx:trackers', conn=RedisClient)
 	1. Clear all stored credentials
 
 ## For Nomal users 
+
 ![Interface for  User](/ss/user.png)
 
 1. No login is required
 
 2. They choose the service from list
-		- *the list is obtained using redisearch idx:trackerlist*
+		- The list is obtained using redisearch idx:trackerlist
+
 		```
 		trackerList_idx.search("@isTracker:True  @exposed:True")
 		```
-		 
-		- *only services flagged as exposed  and isTracker=True are shown in list*
+
+		- Only services flagged as exposed  and isTracker=True are shown in list
 
 3. on Search GEO radius is used for services with in 50KM and top 5 are returned
+
 	```
 	#below longitude and latitude is of the searching user
 	RedisClient.georadius(service, longitude, latitude, 50, unit="km", withdist=True, withcoord=True, count=5, sort="ASC")
 	```
-![Search Result](/ss/search.png)
+
+	![Search Result](/ss/search.png)
