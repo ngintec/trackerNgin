@@ -223,13 +223,13 @@ trackers_idx = Client('idx:trackers', conn=RedisClient)
 1. No login is required
 
 2. They choose the service from list
-		- The list is obtained using redisearch idx:trackerlist
+	- The list is obtained using redisearch idx:trackerlist
 
-		```
-		trackerList_idx.search("@isTracker:True  @exposed:True")
-		```
+	```
+	trackerList_idx.search("@isTracker:True  @exposed:True")
+	```
 
-		- Only services flagged as exposed  and isTracker=True are shown in list
+	- Only services flagged as exposed  and isTracker=True are shown in list
 
 3. on Search GEO radius is used for services with in 50KM and top 5 are returned
 
