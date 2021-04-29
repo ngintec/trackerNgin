@@ -22,7 +22,7 @@ RedisClient = redis.Redis(host=settings.REDIS_HOST, port=settings.REDIS_PORT, us
 ############################
 #InDexes redisearch        #
 ############################
-#FT.CREATE idx:users ON hash PREFIX 1 "users:" SCHEMA searchable_email TEXT SORTABLE phone TEXT SORTABLE
+#FT.CREATE idx:users ON hash PREFIX 1 "users:" SCHEMA searchable_email TEXT SORTABLE phone TEXT SORTABLE password TEXT SORTABLE
 #searchable email is created to avoid issues with "@" in email
 users_idx = Client('idx:users', conn=RedisClient)
 #FT.CREATE idx:trackerlist ON hash PREFIX 1 "users:" SCHEMA isTracker TEXT SORTABLE exposed TEXT SORTABLE
@@ -155,31 +155,22 @@ def Login_Users(user_data):
             # return not registered
                 return "You are not a registered user please register", False
 
-    db_pass= RedisClient.hget("users:{}".format(phone),'password').decode("utf-8")
-    db_email= RedisClient.hget("users:{}".format(phone),'email').decode("utf-8")
-    email_verified= RedisClient.hget("users:{}".format(phone),'email_verified').decode("utf-8")
+    searchable_email=user_data['email'].replace("@","_").replace(".","_")
+    result=users_idx.search("@searchable_email:{}  @phone:{} @password:{}".format(searchable_email, phone, password))
 
-    if not email_verified == "True":
-        return "Please Verify you email and then Try login", False
-
-    #Authenticate here
-    if password == db_pass and email == db_email:
-        searchable_email=user_data['email'].replace("@","_").replace(".","_")
-        result=users_idx.search("{}|{}".format(searchable_email, phone))
-        if result.total == 0:
-            return "Technical Error", False
-        else:
-            # we send all the require info for some authorization in the front end
-            JsonResponse={}
-            JsonResponse['token'] = result.docs[0].Token
-            JsonResponse['trackers'] = ast.literal_eval(result.docs[0].Trackers)
-            JsonResponse['alias'] = result.docs[0].alias
-            JsonResponse['email']=email
-            JsonResponse['id']=phone
-            JsonResponse['isTracker']= result.docs[0].isTracker
-            return JsonResponse, True
-    else:
+    if result.total == 0:
         return "Invalid email, phone and password combination", False
+    else:
+        # we send all the require info for some authorization in the front end
+        JsonResponse={}
+        JsonResponse['token'] = result.docs[0].Token
+        JsonResponse['trackers'] = ast.literal_eval(result.docs[0].Trackers)
+        JsonResponse['alias'] = result.docs[0].alias
+        JsonResponse['email']=email
+        JsonResponse['id']=phone
+        JsonResponse['isTracker']= result.docs[0].isTracker
+        return JsonResponse, True
+
 
 def TokenAuth(phone,token):
     db_Token= RedisClient.hget("users:{}".format(phone),'Token')

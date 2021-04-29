@@ -117,22 +117,23 @@ trackers_idx = Client('idx:trackers', conn=RedisClient)
 
 3. Login 
 	1. User is authenticated
-		- *check if user exists on redis*
+		- Check if user exists on redis
 		```
 		RedisClient.hexists("users:{}".format(phone),'password')
 		```
-		- *check if user exists in db if dbsync is enabled*
-		- *if in db and not un redis pull gfrom dn and add*
+		- Check if user exists in db if dbsync is enabled
+		- If in db and not un redis pull gfrom dn and add
 		```
 		RedisClient.hset('users:{}'.format(phone), mapping=user_data)
 		```
-		- *if does exists send error*
-		- *the authe happens on all 3 : phone, email and password*
-	3. If success send user details along with tokens ( phone, email, alias, token, isTracker)
-		- *we use redis search here on idx:users*
+		- If does exists send error
+		- The authe happens on all 3 : phone, email and password
+		*we use redis search here on idx:users*
 		```
-		users_idx.search("{}|{}".format(searchable_email, phone))
+		`users_idx.search("@searchable_email:{}  @phone:{} @password:{}".format(searchable_email, phone, password))
 		```
+	2. If success send user details along with tokens ( phone, email, alias, token, isTracker)
+
 
 
 4. Load the UI 
