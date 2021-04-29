@@ -148,44 +148,54 @@ trackers_idx = Client('idx:trackers', conn=RedisClient)
 	1. Trackee
 	![Mobile Interface for Trackee](/ss/trackee_m.png)
 	![Interface for  Trackee](/ss/trackee.png)
-		1. Trackee's need to add their trackers ( they can have multiple trackers ).
-		![screen](/ss/addtracker.png) ![screen](/ss/viewtrackers.png) ![screen](/ss/deletetracker.png)
-		```
-		#fetch existing trackers and add to list
-		existing_trackers= ast.literal_eval(RedisClient.hget("users:{}".format(phone),"Trackers").decode("utf-8"))
-	    if tracker not in existing_trackers:
-	        existing_trackers.append(tracker)
-	    #Update back the list
-	    RedisClient.hset("users:{}".format(phone),key='Trackers',value=str(existing_trackers))
-		```
-		2. Fetches the location from the device ( mobile , browser)
-		3. Makes an api call at the requested Update frequency ( default 60s )
-			- *updateFrequency can be changed on the fly and is not stored in backend* 
+		- Trackee's need to add their trackers .they can have multiple trackers.
+			![screen](/ss/addtracker.png) ![screen](/ss/viewtrackers.png) ![screen](/ss/deletetracker.png)
+
+			```
+			#fetch existing trackers list and add the new one to list
+			existing_trackers= ast.literal_eval(RedisClient.hget("users:{}".format(phone),"Trackers").decode("utf-8"))
+		    if tracker not in existing_trackers:
+		        existing_trackers.append(tracker)
+		    #Update back the list
+		    RedisClient.hset("users:{}".format(phone),key='Trackers',value=str(existing_trackers))
+			```
+
+			- Note: Same concept is followed to delete the trackers from the list
+
+		- Fetches the location from the device ( mobile , browser)
+
+		- Makes an api call at the requested Update frequency ( default 60s ) and set the location
 			```
 			RedisClient.hset("users:{}".format(phone),key='Location',value=str(location))
 			```
+			- *updateFrequency can be changed on the fly and is not stored in backend* 
 		![screen](/ss/updateFrequency.png)
-		4. Trackee can update alias --> this is valid when same drivers drive different bus numbers.
+
+		- Trackee can update alias --> this is valid when same drivers drive different bus numbers.
 		![screen](/ss/updatealias.png)
 		```
 		RedisClient.hset("users:{}".format(phone),key='alias',value=alias)
 		```
 
 	2. Tracker
-	![Interface for  Tracker](/ss/tracker.png)
-		1. Fetches the location from the device ( mobile , browser)
-		2. Makes an api call at the requested Update frequency ( default 60s )
+		![Interface for  Tracker](/ss/tracker.png)
+
+		- Fetches the location from the device ( mobile , browser)
+
+		- Makes an api call at the requested Update frequency ( default 60s )
 			- *updateFrequency can be changed on the fly and is not stored in backend*
 			```
 			RedisClient.hset("users:{}".format(phone),key='Location',value=str(location))
 			```
-		3. Also fetches the location of all Trackees from REDIS and puts markers on the graph.
+
+		- Also fetches the location of all Trackees from REDIS and puts markers on the graph.
 			- *we use redis search here on idx:trackers*
 			```
 			trackers_idx.search(phone)
 			```
-		4. Tracker can invite users and Filter from the list of current users whom he want to see.
-		![screen](/ss/invite.png) ![screen](/ss/filter.png)
+
+		- Tracker can invite users and Filter from the list of current users whom he want to see.
+			![screen](/ss/invite.png) ![screen](/ss/filter.png)
 
 
 7. Tracker and Trackee can message each other and other ( all ) in case of emergencies.
@@ -197,10 +207,9 @@ trackers_idx = Client('idx:trackers', conn=RedisClient)
 		MsgQueue.get_message()
 	```
 
-	Note: Each user subscribes to 2 queues , one his own queue(his phone number), and one generic queue(generic-"trackerphone") for tracker
-		1. His queue is used to send 1 to one
-		2. genereric is used to send broadcast message
-	
+	- Note: Each user subscribes to 2 channels , one his own channel(his phone number), and one generic channel(generic-"trackerphone") for tracker
+		- Phone channel is used to send 1 to 1 message
+		- genereric channel is used to send broadcast message
 	![screen](/ss/send.png) ![screen](/ss/receive.png)
 
 
@@ -209,13 +218,16 @@ trackers_idx = Client('idx:trackers', conn=RedisClient)
 
 ## For Nomal users 
 ![Interface for  User](/ss/user.png)
+
 1. No login is required
+
 2. They choose the service from list
 		- *the list is obtained using redisearch idx:trackerlist*
 		```
 		trackerList_idx.search("@isTracker:True  @exposed:True")
 		```
 		- *only services flagged as exposed  and isTracker=True are shown in list*
+		
 3. on Search GEO radius is used for services with in 50KM and top 5 are returned
 	```
 	#below longitude and latitude is of the searching user
