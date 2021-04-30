@@ -39,7 +39,7 @@
 ### - Redis HASH key allows us to store info
 ### - Redis SEARCH Helps Tracker to get the location of all Trackees and authenticate using multiple parameters ( email and phone )
 ###	- Redis GEO helps us to give the distance ( GEO RADIUS )
-### - Redis PUB/SUB works along with SSE  to perform simple emergency messaging
+### - Redis RPUSH and LPOP works to perform simple emergency PERSISTENT messaging
 
 ## Feeding data
 #### Api calls to exsting GPS location providers
@@ -203,15 +203,13 @@ trackers_idx = Client('idx:trackers', conn=RedisClient)
 	* uses redis pubsub and Server side events * 
 	```
 	#publish a message
-		RedisMq.publish(Msg_to, json.dumps(message))
+		RedisMq.rpush("messages:{}".format(Msg_to), json.dumps(message))
 	#read a message
-		MsgQueue.get_message()
+		RedisMq.lpop("messages:{}".format(phone))
 	```
 
-	- Note: Each user subscribes to 2 channels , one his own channel(his phone number), and one generic channel(generic-"trackerphone") for tracker
-		- Phone channel is used to send 1 to 1 message
-		- genereric channel is used to send broadcast message
-	- ![screen](/ss/send.png) ![screen](/ss/receive.png)
+	- ![screen](/ss/sendone.png) ![screen](/ss/receiveone.png)
+	- ![screen](/ss/sendmany.png) ![screen](/ss/receivemany.png)
 
 
 8. Logout

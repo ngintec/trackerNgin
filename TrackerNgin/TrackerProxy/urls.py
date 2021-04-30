@@ -19,5 +19,5 @@ urlpatterns = [
     path('search', csrf_exempt(views.Search.as_view())),
     path('alias', csrf_exempt(views.Alias.as_view())),
     path('publish', csrf_exempt(views.Publish.as_view())),
-    path('event', csrf_exempt(views.Event)),
+    path('event', csrf_exempt(views.Consume.as_view())),
 ]

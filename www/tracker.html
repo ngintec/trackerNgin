@@ -235,7 +235,7 @@
               </form>
             </div>
             <div class="modal-footer justify-content-center text-center">
-              <div id="getTrackerfeedback"></div>
+              <div id="filterfeedback"></div>
             </div>
           </div>
         </div>
@@ -410,10 +410,12 @@
               </a>
             </div>
             <div class="modal-body">
-              <div>
-                <p id="from"></p>
-                <p id="message"></p>
+              <div id="messages">
               </div>
+              <div class="btn-holder">
+                    <button class="btn-primary" onclick="$(`#messages`).empty()">Clear Messages</button>
+                </div>
+
             </div>
           </div>
         </div>

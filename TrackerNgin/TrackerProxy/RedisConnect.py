@@ -3,7 +3,7 @@ import logging, traceback, json, ast
 
 from django.utils import timezone
 from django.conf import settings 
-from redisearch import Client, TextField, IndexDefinition, Query
+from redisearch import Client
 
 from .utils import *
 from .models import Users

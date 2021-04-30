@@ -103,7 +103,7 @@ function removeUserMarkers(key) {
 
 
 
-
+let myUserMapping={};
 // plot other users on my map on gettting a message through websocket
 function plotPosition(data) {
   let userposition=data.location;
@@ -115,13 +115,13 @@ function plotPosition(data) {
   //if iam a new user do below
   if (!myusers[data.from]){
     //add user to myuserlist and set tracking as on by default
-    if ( Object.keys(myuserlist).indexOf(data.alias) == -1 ){
-      myuserlist[data.alias]="on";
-      myuserMappings.push({"phone":data.from, "alias":data.alias});
+    if ( Object.keys(myuserlist).indexOf(data.from) == -1 ){
+      myuserlist[data.from]="on";
     }
-
+    //Create a phone to alias mapping
+    myUserMapping[data.from]=data.alias;
     //add user to enabledusers and set tracking as on by default
-    enabledUsers.push(data.alias);
+    enabledUsers[data.from]=data.alias;
     //perform actions to put him on the map
     markers[data.from] = new OpenLayers.Layer.Markers( "Markers" );
     myusers[data.from]=new OpenLayers.Marker(lonLat)
@@ -137,8 +137,10 @@ function plotPosition(data) {
     );
     map.addPopup(popups[data.from])
   } else {
+    //update a phone to alias mapping
+    myUserMapping[data.from]=data.alias;
     //if its an old user check if he is enabled and then only plot his position;
-    if (enabledUsers.indexOf(data.alias) > -1 ){
+    if ( enabledUsers[data.from] ){
       // try catch is needed for filtered and then unfiltered events
       try{
         map.removeLayer(markers[data.from]);
@@ -162,12 +164,13 @@ function plotPosition(data) {
       map.addPopup(popups[data.from])
     } else {
       try{
-        map.removeLayer(markers[data.from]);
-        map.removePopup(popups[data.from]);
-      } catch {
-
-      }
+            map.removeLayer(markers[data.from]);
+            map.removePopup(popups[data.from]);
+          } catch(err) {
+          }
+      
     }
+
     // not enabled users are already filtered in the filtering event;
   }
 }

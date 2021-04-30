@@ -8,8 +8,7 @@ let myAlias; //picked from credentials
 let myRole; //Am i tracker
 let myTrackers = [];
 let myuserlist={};//all users who are send me data
-let myuserMappings=[];
-var enabledUsers =[] ;//list of users i want to monitor ( filter option )
+let enabledUsers ={} ;//list of users i want to monitor ( filter option )
 
 let updateFrequency= 60; //in seconds we update every x miliseconds
 
@@ -118,9 +117,9 @@ function toggleModal(id){
 		$(`#filterUsers #userHolder`).empty();
 		for (const [key, value] of Object.entries(myuserlist)){
 			if (value == "on"){
-				$(`#filterUsers #userHolder`).append(`<div class="btn-holder"><input id="${key}" name="${key}" type="checkbox" checked>${key}</div>`)
+				$(`#filterUsers #userHolder`).append(`<div class="btn-holder"><input id="${key}" name="${key}" type="checkbox" checked>${myUserMapping[key]}</div>`)
 			} else {
-				$(`#filterUsers #userHolder`).append(`<div class="btn-holder"><input id="${key}" name="${key}" type="checkbox">${key}</div>`)
+				$(`#filterUsers #userHolder`).append(`<div class="btn-holder"><input id="${key}" name="${key}" type="checkbox">${myUserMapping[key]}</div>`)
 			}
 		}
 
@@ -134,12 +133,15 @@ function toggleModal(id){
 		toggleModal('userLoginModal');
 	} else if ( id == "callModal"){
 		$(`#callUser #UserList`).empty();
-		$(`#callUser #UserList`).append(`<option value="general-${myId}">All</option>`)
-		for (const user of myuserMappings){
-				$(`#callUser #UserList`).append(`<option value="${user.phone}">${user.alias}</option>`)
+		if (myRole == "tracker"){
+			$(`#callUser #UserList`).append(`<option value="general-${myId}">All</option>`)
+		}
+		for (const [k, v] of Object.entries(myUserMapping)){
+				$(`#callUser #UserList`).append(`<option value="${k}">${v}</option>`)
 		}
 		for ( const tracker of myTrackers){
 			$(`#callUser #UserList`).append(`<option value="${tracker}">${tracker}</option>`);
+			$(`#callUser #UserList`).append(`<option value="general-${tracker}">All-${tracker}</option>`);
 		}
 	}
 	//clear all feedback messages on modal close
@@ -162,14 +164,17 @@ function trackingSwitch() {
 	if (document.getElementById(`trackSwitch`).checked){
 		$(`.switch .slider`).html("ON");
 		$(`.switch .slider`).css("text-align","left");
-		//event receiver
-		EventReceiver();
+
 		if ( myRole == "tracker"){
+			//Trackers get location
 			getLocation(); 
 			watchid=setInterval(()=>{ getData()},updateFrequency * 1000);
 		} else {
+			//Trackees send location
 			watchid=setInterval(()=>{ getLocation()},updateFrequency * 1000);
 		}
+		//common event receiver (message)
+		eventId=setInterval(()=> {EventReceiver()}, updateFrequency *1000);
 	} else {
 		$(`.switch .slider`).html("OFF");
 		$(`.switch .slider`).css("text-align","right");
@@ -437,17 +442,21 @@ function filterUsers(event){
 	toggleLoading();
 	const data = new FormData(event.target);
 	const jsonData = Object.fromEntries(data.entries());
-	enabledUsers = Object.keys(jsonData);
+	const filteredUsers = Object.keys(jsonData);
 	// loop through the userlist and remove markers for users 
 	// who are not there in enabled users list
 	for (const [key, value] of Object.entries(myuserlist)){
-		if (enabledUsers.indexOf(key) == -1){
+		if (filteredUsers.indexOf(key) == -1){
 			//users who are not enabled have a state off in myuserlist 
 			// and remove their markers
 			myuserlist[key]="off";
-		} 
+			delete enabledUsers[key];
+		} else {
+			enabledUsers[key]=myUserMapping[key];
+		}
   	}
 	toggleLoading();
+	$(`#filterfeedback`).html("Filter applied and will take effect in 60 seconds/update frequency")
 }
 
 
@@ -588,7 +597,9 @@ function changeFrequency(event){
 	$(`#changeFrequency label`).html(`Current Frequency: ${updateFrequency} seconds`);
 	$(`#changeFrequencyfeedback`).html(`Update Frequency Updated, the new frequency will be lost on browser refresh`);
 	clearInterval(watchid);
+	clearInterval(eventId);
 	watchid=setInterval(()=>{ getData()},updateFrequency * 1000);
+	eventId=setInterval(()=> {EventReceiver()}, updateFrequency *1000);
 	toggleLoading();
 }
 
@@ -643,7 +654,7 @@ function getData(){
 					$(`#errorLogs`).html(`${apifeedback.data.message}, ${apifeedback.data.Reason}`);
 				}  else {
 					for (const user of apifeedback.data.message){
-						plotPosition(user);
+							plotPosition(user);
 					}
 				}
 		});
@@ -697,26 +708,42 @@ function stopLocation(){
 //sse 
 let source;
 function EventReceiver(){
-	// source = new EventSource(`${base_url}event?uc=${myToken}&id=${myId}`)
-	// source.onmessage = function(event) {
-	// 	message= JSON.parse(event.data);
-	// 	if (message.message != "None") {
-	// 		message= JSON.parse(event.data);
-	// 		toggleModal('messageModal');
-	// 		$(`#messageModal #from`).empty();
-	// 		$(`#messageModal #from`).html(`From : ${message.from}`);
-	// 		$(`#messageModal #message`).empty();
-	// 		$(`#messageModal #message`).html(`Message : ${message.message}`)
-	//   	}
-	// };
-	// source.onopen = () => {
-	// 	console.log("opened");
-	// }
+		fetch(`${base_url}event`,{
+			method: 'GET',
+			headers: {
+	      		'Content-Type': 'application/json',
+	      		'id':myId,
+	      		'token':myToken
+	      		},
+	    	}
+		).then(response => {
+			response.json().then(data => {
+			if (!response.ok){
+					return { data :data, state :false}
+				}
+			else{
+					return { data :data, state :true}
+				}
+			}).then((apifeedback) => {
+				if ( ! apifeedback.state){
+					$(`#errorLogs`).html(`${apifeedback.data.message}, ${apifeedback.data.Reason}`);
+				}  else {
+					// $(`#addTrackerList`).empty();
+					for (const tracker of apifeedback.data.message){
+						if (tracker) {
+							message=JSON.parse(tracker);
+							$(`#messages`).prepend(`<div style="margin: 10px; border: 1px solid black">
+													<p>From : ${message.from}</p>
+													<p>Message : ${message.message}</p>
+													</div>`);
+							toggleModal('messageModal');
+						}
+					}
 
-	// source.onerror = function(event) {
-	// 	source.close();
-	//  	// setTimeout(()=>EventReceiver(), 10000);
-	// };
+				}
+		});
+		});
+
 }
 
 
