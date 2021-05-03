@@ -147,7 +147,6 @@ trackers_idx = Client('idx:trackers', conn=RedisClient)
 6. Once the user turns on  tracking switch.
 
 	1. Trackee
-		- ![Mobile Interface for Trackee](/ss/trackee_m.png)
 		- ![Interface for  Trackee](/ss/trackee.png)
 		- Trackee's need to add their trackers .they can have multiple trackers.
 			- ![screen](/ss/addtracker.png) ![screen](/ss/viewtrackers.png) ![screen](/ss/deletetracker.png)
