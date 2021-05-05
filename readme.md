@@ -137,7 +137,7 @@ trackers_idx = Client('idx:trackers', conn=RedisClient)
 
 
 4. Load the UI
-	-  ![screen](/ss/usersettings.png) 
+	-  ![screen](https://locatorservices.ngintec.com/ss/usersettings.png) 
 
 5. For All calls needing registered user authentication is done based on token and id
 	```
@@ -147,9 +147,9 @@ trackers_idx = Client('idx:trackers', conn=RedisClient)
 6. Once the user turns on  tracking switch.
 
 	1. Trackee
-		- ![Interface for  Trackee](/ss/trackee.png)
+		- ![Interface for  Trackee](https://locatorservices.ngintec.com/ss/trackee.png)
 		- Trackee's need to add their trackers .they can have multiple trackers.
-			- ![screen](/ss/addtracker.png) ![screen](/ss/viewtrackers.png) ![screen](/ss/deletetracker.png)
+			- ![screen](https://locatorservices.ngintec.com/ss/addtracker.png) ![screen](https://locatorservices.ngintec.com/ss/viewtrackers.png) ![screen](https://locatorservices.ngintec.com/ss/deletetracker.png)
 
 			```
 			#fetch existing trackers list and add the new one to list
@@ -169,16 +169,16 @@ trackers_idx = Client('idx:trackers', conn=RedisClient)
 			RedisClient.hset("users:{}".format(phone),key='Location',value=str(location))
 			```
 			- *updateFrequency can be changed on the fly and is not stored in backend* 
-			- ![screen](/ss/updateFrequency.png)
+			- ![screen](https://locatorservices.ngintec.com/ss/updateFrequency.png)
 
 		- Trackee can update alias --> this is valid when same drivers drive different bus numbers.
-		![screen](/ss/updatealias.png)
+		![screen](https://locatorservices.ngintec.com/ss/updatealias.png)
 		```
 		RedisClient.hset("users:{}".format(phone),key='alias',value=alias)
 		```
 
 	2. Tracker
-		- ![Interface for  Tracker](/ss/tracker.png)
+		- ![Interface for  Tracker](https://locatorservices.ngintec.com/ss/tracker.png)
 
 		- Fetches the location from the device ( mobile , browser)
 
@@ -195,7 +195,7 @@ trackers_idx = Client('idx:trackers', conn=RedisClient)
 			```
 
 		- Tracker can invite users and Filter from the list of current users whom he want to see.
-			- ![screen](/ss/invite.png) ![screen](/ss/filter.png)
+			- ![screen](https://locatorservices.ngintec.com/ss/invite.png) ![screen](https://locatorservices.ngintec.com/ss/filter.png)
 
 
 7. Tracker and Trackee can message each other and other ( all ) in case of emergencies.
@@ -207,8 +207,8 @@ trackers_idx = Client('idx:trackers', conn=RedisClient)
 		RedisMq.lpop("messages:{}".format(phone))
 	```
 
-	- ![screen](/ss/sendone.png) ![screen](/ss/receiveone.png)
-	- ![screen](/ss/sendmany.png) ![screen](/ss/receivemany.png)
+	- ![screen](https://locatorservices.ngintec.com/ss/sendone.png) ![screen](https://locatorservices.ngintec.com/ss/receiveone.png)
+	- ![screen](https://locatorservices.ngintec.com/ss/sendmany.png) ![screen](https://locatorservices.ngintec.com/ss/receivemany.png)
 
 
 8. Logout
@@ -216,7 +216,7 @@ trackers_idx = Client('idx:trackers', conn=RedisClient)
 
 ## For Nomal users 
 
-- ![Interface for  User](/ss/user.png)
+- ![Interface for  User](https://locatorservices.ngintec.com/ss/user.png)
 
 1. No login is required
 
@@ -236,4 +236,4 @@ trackers_idx = Client('idx:trackers', conn=RedisClient)
 	RedisClient.georadius(service, longitude, latitude, 50, unit="km", withdist=True, withcoord=True, count=5, sort="ASC")
 	```
 
-	- ![Search Result](/ss/search.png)
+	- ![Search Result](https://locatorservices.ngintec.com/ss/search.png)
