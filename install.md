@@ -99,7 +99,18 @@ cd /opt/trackerNgin/trackerNgin
 ```
 
 * for autostart across reboot
+
 ```
+create a file with all variable
+#/home/ubuntu/trackerngin.sh
+REDIS_PASSWORD="sdf"
+SMTP_USER="sdf"
+SMTP_PASS="sdf"
+SMTP_HOST="sdf"
+SMTP_PORT=587
+REDIS_HOST="sdf"
+REDIS_PORT=14371
+
 #In this file ==> /etc/systemd/system/uvicorn-trackerngin.service 
 #Add bemow
 
@@ -110,6 +121,7 @@ After=network.target
 [Service]
 User=ubuntu
 Group=ubuntu
+EnvironmentFile=-/home/ubuntu/trackerngin.sh
 WorkingDirectory=/opt/trackerNgin/trackerNgin/
 ExecStart=/opt/trackerNgin/bin/uvicorn TrackerNgin.asgi:application --port 10000 --uds /tmp/trackerngin.sock
 Restart=always
