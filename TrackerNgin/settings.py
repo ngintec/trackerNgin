@@ -11,6 +11,7 @@ https://docs.djangoproject.com/en/3.2/ref/settings/
 """
 
 from pathlib import Path
+import os
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -131,12 +132,18 @@ STATIC_URL = '/static/'
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 # Redis config
-REDIS_HOST = 'redis-14371.c57.us-east-1-4.ec2.cloud.redislabs.com'
-REDIS_PORT = 14371
+REDIS_HOST = os.environ['REDIS_HOST']
+REDIS_PORT = os.environ['REDIS_PORT']
 REDIS_USER = "app"
-REDIS_PASSWORD = "ngin-TEC-123"
+# REDIS_PASSWORD = "ngin-TEC-123"
 # you can also set export $REDIS_PASSWORD="ngin-TEC-123" and specify
-# REDIS_PASSWORD = os.environ['REDIS_PASSWORD']
+REDIS_PASSWORD = os.environ['REDIS_PASSWORD']
 
 # Should you sync with RDBMS
 RDBMS = False
+
+#SMTP
+SMTP_USER = os.environ['SMTP_USER']
+SMTP_PASS = os.environ['SMTP_PASS']
+SMTP_HOST = os.environ['SMTP_HOST']
+SMTP_PORT = os.environ['SMTP_PORT']

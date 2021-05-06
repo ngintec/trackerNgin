@@ -1,4 +1,5 @@
 import traceback, logging
+from django.conf import settings
 
 logger=logging.getLogger("utils")
 #this contains all functions that are helpers
@@ -126,9 +127,9 @@ def SendMail(email_from, email_to, email_body, subject):
             msg['cc'] = email_to[1]
         
         
-        server = smtplib.SMTP(host="email-smtp.ap-south-1.amazonaws.com" ,port=587)
+        server = smtplib.SMTP(host=settings.SMTP_HOST ,port=settings.SMTP_PORT)
         server.starttls()
-        server.login('AKIATMZTIAC7UUBQ3Z6G', 'BJLaOMyyC8xN/qLF9wD4tF63BMjm4ehaPkwny2KYnbSi')
+        server.login(settings.SMTP_USER, settings.SMTP_PASS)
         
         
         server.sendmail(email_from, email_to, msg.as_string())

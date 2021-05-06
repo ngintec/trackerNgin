@@ -42,17 +42,25 @@ cd /opt/trackerNgin/trackerNgin/TrackerNgin
 --Edit the setting.py and in the end change the following as per your requirments.
 ```
 # Redis config
-REDIS_HOST = 'redis-14371.c57.us-east-1-4.ec2.cloud.redislabs.com'
-REDIS_PORT = 14371
-REDIS_USER = "app"
-REDIS_PASSWORD = "ngin-TEC-123" 
-# you can also set export $REDIS_PASSWORD="ngin-TEC-123" and specify
+REDIS_HOST = "urredishost"
+REDIS_PORT = "urredispass"
+REDIS_USER = "appuser"
+REDIS_PASSWORD = "apppass" 
+# you can also set export $REDIS_PASSWORD="apppass" and specify
 # REDIS_PASSWORD = os.environ['REDIS_PASSWORD']
 
+
+#SMTP
+SMTP_USER = os.environ['SMTP_USER']
+SMTP_PASS = os.environ['SMTP_PASS']
+SMTP_HOST = os.environ['SMTP_HOST']
+SMTP_PORT = os.environ['SMTP_PORT']
 
 # Should you sync with RDBMS
 # if you want info to be synced with RDBMS set to true
 RDBMS = True
+
+
 
 # if you set the above to true
 # make sure you give the db details in databASE SECTION
