@@ -18,8 +18,8 @@ python3 -m venv trackerNgin
 3. Clone repository
 ```
 cd trackerNgin/
-git clone https://github.com/ngintec/trackeNgin.git
-cd trackeNgin/
+git clone https://github.com/ngintec/trackerNgin.git
+cd trackerNgin/
 git checkout master
 ```
 
@@ -40,25 +40,11 @@ pip install -r requirements.txt
 cd /opt/trackerNgin/trackerNgin/TrackerNgin
 ```
 --Edit the setting.py and in the end change the following as per your requirments.
+
 ```
-# Redis config
-REDIS_HOST = "urredishost"
-REDIS_PORT = "urredispass"
-REDIS_USER = "appuser"
-REDIS_PASSWORD = "apppass" 
-# you can also set export $REDIS_PASSWORD="apppass" and specify
-# REDIS_PASSWORD = os.environ['REDIS_PASSWORD']
-
-
-#SMTP
-SMTP_USER = os.environ['SMTP_USER']
-SMTP_PASS = os.environ['SMTP_PASS']
-SMTP_HOST = os.environ['SMTP_HOST']
-SMTP_PORT = os.environ['SMTP_PORT']
 
 # Should you sync with RDBMS
-# if you want info to be synced with RDBMS set to true
-RDBMS = True
+RDBMS = False
 
 
 
@@ -81,27 +67,9 @@ DATABASES = {
 # we dont use this for auth but we still keep it for Djano and future
 AUTH_USER_MODEL = 'TrackerProxy.Users'
 ```
-6. Migrate (needed only if rdbms is user)
 
+-- create a file with all variable
 ```
-cd /opt/trackerNgin/trackerNgin
-./manage.py makemigration
-./manage.py migrate
-```
-
-
-7. Start Django using uvicorn
-
-```
-#the below port will be same as in nginx config
-/opt/tasenv/bin/uvicorn tasproj.asgi:application --port 10000 --uds /tmp/trackerngin.sock
- 
-```
-
-* for autostart across reboot
-
-```
-create a file with all variable
 #/home/ubuntu/trackerngin.sh
 REDIS_PASSWORD="sdf"
 SMTP_USER="sdf"
@@ -111,8 +79,49 @@ SMTP_PORT=587
 REDIS_HOST="sdf"
 REDIS_PORT=14371
 
-#In this file ==> /etc/systemd/system/uvicorn-trackerngin.service 
-#Add bemow
+#the below export are only needed to test from command line, not harm in keeping them
+export REDIS_PASSWORD
+export SMTP_USER
+export SMTP_PASS
+export SMTP_HOST
+export SMTP_PORT
+export REDIS_HOST
+export REDIS_PORT
+```
+
+-- set the variables
+```
+	source /home/ubuntu/trackerngin.sh
+```
+
+6. Migrate (needed only if rdbms is used)
+
+```
+cd /opt/trackerNgin/trackerNgin
+./manage.py makemigrations
+./manage.py migrate
+```
+
+
+7. Start Django using uvicorn
+
+```
+#the below port will be same as in nginx config
+/opt/trackerNgin/bin/uvicorn TrackerNgin.asgi:application --port 10000 --uds /tmp/trackerngin.sock
+
+#if success the press Cntrl+c and come out
+ 
+```
+
+* for autostart across reboot
+
+```
+
+
+#create this file ==> /etc/systemd/system/uvicorn-trackerngin.service 
+#Add below
+# The Environment file is the file you created in step 5 (last step) containing smtp and redis details
+# make sure you put the correct user and paths
 
 [Unit]
 Description=uvicorn daemon
@@ -131,10 +140,22 @@ WantedBy=multi.user.target
 
 ```
 
+* start the service and check the status
+
+```
+sudo service uvicorn-trackerngin start
+sudo service uvicorn-trackerngin status
+# if you get errors these can be possible causes
+1. user
+2. paths
+3. environment file
+
+```
 8. Reverse proxy setup
 
 refer to [trackerngin.conf](./trackerngin.conf)
 You will need to create a link or copy the file after creating the ssl certs to the nginx folders
+check the paths as per you OS and requirement below and as well in the [trackerngin.conf](./trackerngin.conf) file
 MACOS
 ``
 ln -s /Users/arungautham/trackerNgin/trackerNgin/trackerngin.conf /usr/local/etc/nginx/servers/trackerngin.conf 
@@ -143,6 +164,13 @@ Ubuntu
 ```
 ln -s /opt/trackerNgin/trackerNgin/trackerngin.conf /etc/nginx/sites-enabled/trackerngin.conf 
 
+```
+
+Restart the server or reload the config
+```
+sudo nginx -s reload
+or
+sudo service nginx restart
 ```
 
 9. open https://localhost/tracker
