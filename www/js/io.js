@@ -750,17 +750,26 @@ function EventReceiver(){
 //start once every thing is loaded;
 $(document).ready(function(){
 	// handle the verify email stuff
-       let action = location.search.split("=")[1] ? location.search.split("=")[1] : undefined;
-       if (action){
-        if (action == "success"){
-          alert("Success, Now you can login");
-          location.search="";
-        } else {
-          alert("Failure, Some thing went wrong");
-          location.search="";
-        }
-       }
+		let searchParams = new URLSearchParams(location.search);
+
+		if (searchParams.has("action")){
+	        let action = searchParams.get("action");
+	        if (action == "success"){
+	          alert("Success, Now you can login");
+	          location.search="";
+	        } else {
+	          alert("Failure, Some thing went wrong");
+	          location.search="";
+	        }
+	    } else if (searchParams.has("id") && searchParams.has("email"))
+	    {
+	    	let phone=parseInt(searchParams.get("id"));
+	    	let email=searchParams.get("email");
+	    	$(`#login input[name=id]`).val(phone);
+	    	$(`#login input[name=email]`).val(email);
+	    }
+	    userAuth();
+       		
     // Verify email done
     // Now start the auth process
-    userAuth();
 });
