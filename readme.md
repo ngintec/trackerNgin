@@ -147,6 +147,7 @@ trackers_idx = Client('idx:trackers', conn=RedisClient)
 6. Once the user turns on  tracking switch.
 
 	1. Trackee
+		- Note: Trackee has a [mobile app](https://github.com/ngintec/trackernginmobileapp.git) as well 
 		- ![Interface for  Trackee](https://locatorservices.ngintec.com/ss/trackee.png)
 		- Trackee's need to add their trackers .they can have multiple trackers.
 			- ![screen](https://locatorservices.ngintec.com/ss/addtracker.png) ![screen](https://locatorservices.ngintec.com/ss/viewtrackers.png) ![screen](https://locatorservices.ngintec.com/ss/deletetracker.png)
