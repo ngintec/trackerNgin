@@ -1,70 +1,110 @@
-<!DOCTYPE html> 
-<html lang = "en">
- 
-   <head> 
-    <title>Tracker_ngIN geoTracking solutions</title>
-    <meta charset = "utf-8" /> 
-    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no, maximum-scale=1, minimum-scale=1">
-    <script type="text/javascript" src="js/tpjs/jquery-3.4.1.min.js"></script>
-    <script type="text/javascript" src="js/tpjs/jquery.validate.min.js" ></script>
-    <script src="js/tpjs/OpenLayers.js"></script>
-    <link rel="stylesheet" href="css/tracker.css">
-   </head> 
-	
-   <body class="bg-light"> 
-      <nav class="navbar navbar-dark bg-dark">
-        <a class="nav-toggler" onclick="toggleMenu()"><img src="/css/toggler.png"/></a>
-        <li class="navbar-brand">
-            TrackerNgin
-        </li> 
-        <ul class="centering">
-        </ul>
-        <div class="navbar-collapse" id="myToggler">
-          <ul class="navbar-nav">
-            <li class="dropdown-toggle">
-              <a class="nav-link" href="/tracker" >Login</a>
-            </li>
-          </ul>
-        </div>
-      </nav>
+<!DOCTYPE html>
+<html lang="en">
 
-      <div class="container">
-        <div class="top-card">
-          <div class="top-container">
-            <h3>Locate nearby ON THE GO (OTG) Services</h3>
-            <p> Locate a public transport, Ambulance, Towing truck, police vehicle and many more services plying near you. </p>
-          </div>
-        </div>
+<head>
+  <title>Tracker_ngIN geoTracking solutions</title>
+  <meta charset="utf-8" />
+  <meta name="viewport"
+    content="width=device-width, initial-scale=1, user-scalable=no, maximum-scale=1, minimum-scale=1">
+  <script type="text/javascript" src="js/tpjs/jquery-3.4.1.min.js"></script>
+  <script type="text/javascript" src="js/tpjs/jquery.validate.min.js"></script>
+  <script src="js/tpjs/OpenLayers.js"></script>
+  <link rel="stylesheet" href="css/tracker.css">
 
-        <div class="other-card">
-          <div class="left-container">
-            <h3>Search OTG Vehicle</h3>
-            <div id="search">
-              <form id="searchForm">
-                <p>Select a Service below:</p>
-                <select class="form-control" id="services" name="service">
-                  
-                </select>
-                <div class="btn-holder">
-                    <button class="btn-primary" type="submit">Search</button>
-                </div>
-              </form>
-              <div class="modal-footer justify-content-center text-center">
-                <div id="searchFeedBack"></div>
-              </div>
+
+</head>
+
+<body class="bg-light">
+  <nav class="navbar navbar-dark bg-dark">
+    <a class="nav-toggler" onclick="toggleMenu()"><img src="/css/toggler.png" /></a>
+    <li class="navbar-brand">
+      TrackerNgin
+    </li>
+    <ul class="centering">
+    </ul>
+    <div class="navbar-collapse" id="myToggler">
+      <ul class="navbar-nav">
+        <li class="dropdown-toggle">
+          <a class="nav-link" href="/tracker">Login</a>
+        </li>
+      </ul>
+    </div>
+  </nav>
+
+  <div class="container">
+    <div class="top-card">
+      <div class="top-container">
+        <h3>Locate nearby ON THE GO (OTG) Services</h3>
+        <p> Locate a public transport, Ambulance, Towing truck, police vehicle and many more services plying near you.
+        </p>
+      </div>
+    </div>
+
+    <div class="other-card">
+      <div class="left-container">
+        <h3>Search OTG Vehicle</h3>
+        <div id="search">
+          <form id="searchForm">
+            <p>Select a Service below:</p>
+            <select class="form-control" id="services" name="service">
+
+            </select>
+            <div class="btn-holder">
+              <button class="btn-primary" type="submit">Search</button>
+              <button type="button" class=" btn-secondary" onclick="toggleModal('raiseComplaintModal')">Message</button>
+
+             
+
             </div>
-          </div>
-          <div class="right-container">
-            <div>
-              <div class="map-home" id="mapContainer">
-              </div>
-            </div>
+          </form>
+          <div class="modal-footer justify-content-center text-center">
+            <div id="searchFeedBack"></div>
           </div>
         </div>
       </div>
-      
+      <div class="right-container">
+        <div>
+          <div class="map-home" id="mapContainer">
+          </div>
+        </div>
+      </div>
+    </div>
+    <!-- <p id="demo">qqq</p> -->
+  </div>
 
-      <script type="text/javascript" src="js/home.js" ></script>
-      <!-- <script type="text/javascript" src="js/client.js"></script> -->
-  </body>
+  <div id="raiseComplaintModal" class="modal" >
+    <div>
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">Message</h5>
+          <a class="close" onclick="toggleModal('raiseComplaintModal')">
+            <span aria-hidden="true">&times;</span>
+          </a>
+        </div>
+        <div class="modal-body" >
+          <form autocomplete="on" id="raiseComplaintModal">
+            <label></label>
+            <input style="margin-left: 15px;" class="form-control" autocomplete="on" type="number" name="from" placeholder="From" required />
+            <textarea class="form-control" autocomplete="on" type="text" name="description" placeholder="Enter message" minlength="10" required ></textarea>
+            <!-- location to be sent to backend  -->
+            <input class="form-control" id="locationCompaintMobileNo" autocomplete="on" type="text" name="to"  hidden />
+            <input class="form-control" id="locationCompaint" autocomplete="on" type="text" name="locationValue" hidden />
+            
+            <div class="btn-holder">
+              <button class="btn-primary" type="submit">Send Complaint</button>
+            </div>
+          </form>
+        </div>
+        <div class="modal-footer justify-content-center text-center">
+          <div id="raiseComplaintfeedback"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script type="text/javascript" src="js/home.js"></script>
+  <script type="text/javascript" src="js/client.js"></script>
+
+</body>
+
 </html>

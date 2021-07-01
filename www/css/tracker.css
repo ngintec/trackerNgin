@@ -354,6 +354,14 @@ button {
 	border: 1px solid #aaa;
 	width: 30%;
 }
+.btn-secondary {
+	border-radius: 5px;
+	background-color: #313131;
+	color: white;
+	height: 3em;
+	border: 1px solid #aaa;
+	width: 30%;
+}
 .btn-warning {
 	border-radius: 5px;
 	background-color: #FF9933;

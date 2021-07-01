@@ -10,6 +10,8 @@ map = new OpenLayers.Map("mapContainer");
 map.addLayer(new OpenLayers.Layer.OSM());
 
 
+
+
 let zoom=12;//zoom the map doth set too high zoom on screen instead
 let myposition;//my location
 let myusers={};//people who are sending me data
@@ -151,6 +153,7 @@ let port= window.location.port
 let env="api"
 let base_url= `https://${myHostname}:${port}/${env}/`;
 
+
 function toggleMenu(){
 	$menu = $(`#myToggler .navbar-nav`);
 	$menu.toggleClass('showmenu');
@@ -203,3 +206,58 @@ $(document).ready(function(){
 				})
 		});
 });
+
+
+function toggleModal(id){
+	// Get the modal
+	$modal = $(`#${id}`);
+	$modal.toggleClass('show');
+
+	document.getElementById("locationCompaint").value = myposition;
+
+	var e = document.getElementById("services");
+	var mobileNo = e.options[e.selectedIndex].value;
+	document.getElementById("locationCompaintMobileNo").value = mobileNo;
+}
+
+
+// Modal for raise complaint
+
+const raiseComplaint = document.getElementById('raiseComplaintModal');
+raiseComplaint.addEventListener('submit', userComplaint);
+
+function userComplaint(event){
+	event.preventDefault();
+	toggleLoading();
+	const data = new FormData(event.target);
+	const jsonData = Object.fromEntries(data.entries());
+
+	console.log(data, jsonData)
+	console.log(jsonData)
+// Add new api end point replacing NEW_END_POINT
+	fetch(`${base_url}NEW_END_POINT`,{
+			method: 'POST',
+			headers: {
+	      		'Content-Type': 'application/json'
+	    		},
+	    	body: JSON.stringify(jsonData)
+	    	}	
+		).then(response => {
+			response.json().then(data => {
+			if (!response.ok){
+					return { data :data, state :false}
+				}
+			else{
+					return { data :data, state :true}
+				}
+			}).then((apifeedback) => {
+				toggleLoading();
+				if (apifeedback.state){
+					toggleModal(`raiseComplaintModal`);
+					raiseComplaint.reset();	
+				} else {
+					$(`#raiseComplaintfeedback`).html(apifeedback.data.message);
+				}
+		});
+		})
+}
