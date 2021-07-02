@@ -21,7 +21,7 @@ let watchid, mypopup, mymarker; //my data only watch id is used to clear the set
 
 
 function getIcon(usertype){
-	var size = new OpenLayers.Size(15,15);
+	var size = new OpenLayers.Size(14,21);
 	var offset = new OpenLayers.Pixel(-(size.w/2), -size.h);
 	if (usertype == "user") {
 	  var icon = new OpenLayers.Icon('/js/tpjs/img/user.png', size, offset);
