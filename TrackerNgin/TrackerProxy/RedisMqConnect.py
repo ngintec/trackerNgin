@@ -37,3 +37,13 @@ def Publish(message):
 		#publish to one
 		RedisMq.rpush("messages:{}".format(Msg_to), json.dumps(message))
 	return True
+
+def StoreMessage(message):
+	message_from = message["from"]
+	message_to = message["to"]
+	message_location = message['locationValue']
+	save_message = {"from": message_from, "message" : message['message'], "location": message_location }
+
+	RedisMq.rpush("messages:{}".format(message_to), json.dumps(save_message))
+	return True
+

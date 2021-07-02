@@ -17,6 +17,19 @@ let markers={};// makers of every individual
 let popups={};//popups of every individual
 let watchid, mypopup, mymarker; //my data only watch id is used to clear the setInterval
 
+function getIcon(usertype){
+  var size = new OpenLayers.Size(15,15);
+  var offset = new OpenLayers.Pixel(-(size.w/2), -size.h);
+  if (usertype == "user") {
+    var icon = new OpenLayers.Icon('/js/tpjs/img/user.png', size, offset);
+  } else if (usertype == "trackee"){
+    var icon = new OpenLayers.Icon('/js/tpjs/img/trackee.png', size, offset);
+  } else {
+    var icon = new OpenLayers.Icon('/js/tpjs/img/me.png', size, offset);
+  }
+  return icon;
+}
+
 // here is where the location service starts
 async function getLocation() {
       if (navigator.geolocation) {
@@ -48,7 +61,7 @@ function recordPosition(position) {
     map.removePopup(mypopup);
   }
   mymarker = new OpenLayers.Layer.Markers( "Markers" );
-  mymarker.addMarker(new OpenLayers.Marker(lonLat));
+  mymarker.addMarker(new OpenLayers.Marker(lonLat, getIcon("me")));
   map.addLayer(mymarker);
   
   map.setCenter(lonLat, zoom);
@@ -105,7 +118,7 @@ function removeUserMarkers(key) {
 
 let myUserMapping={};
 // plot other users on my map on gettting a message through websocket
-function plotPosition(data) {
+function plotPosition(data, usertype) {
   let userposition=data.location;
   let lonLat = new OpenLayers.LonLat( userposition[0] ,userposition[1] )
   .transform(
@@ -124,7 +137,7 @@ function plotPosition(data) {
     enabledUsers[data.from]=data.alias;
     //perform actions to put him on the map
     markers[data.from] = new OpenLayers.Layer.Markers( "Markers" );
-    myusers[data.from]=new OpenLayers.Marker(lonLat)
+    myusers[data.from]=new OpenLayers.Marker(lonLat, getIcon(usertype))
     map.addLayer(markers[data.from]);
     markers[data.from].addMarker(myusers[data.from]);
     popups[data.from]= new OpenLayers.Popup.Anchored(
@@ -150,7 +163,7 @@ function plotPosition(data) {
       }
       //redraw
       markers[data.from] = new OpenLayers.Layer.Markers( "Markers" );
-      myusers[data.from]=new OpenLayers.Marker(lonLat)
+      myusers[data.from]=new OpenLayers.Marker(lonLat, getIcon(usertype))
       map.addLayer(markers[data.from]);
       markers[data.from].addMarker(myusers[data.from]);
       popups[data.from]= new OpenLayers.Popup.Anchored(

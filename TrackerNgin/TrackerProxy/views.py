@@ -347,6 +347,19 @@ class Consume(APIView):
 			pass
 			return Response({"message":"Internal Server Error", "Reason":"Technical Error"},status=500)	
 
+class UserMessage(APIView):
+
+	def post(self, request):
+		try:
+			user_data= request.data
+			message= RedisMqConnect.StoreMessage(user_data)
+			return Response({"message":"Message sent"})
+		except:
+			logger.error("Some Exception occured in Getting Messages",exc_info=True)
+			pass
+			return Response({"message":"Internal Server Error", "Reason":"Technical Error"},status=500)	
+
+
 
 # @permission_classes(['EventSource'])
 # def Event(request):

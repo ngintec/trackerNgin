@@ -20,6 +20,20 @@ let popups={};//popups of every individual
 let watchid, mypopup, mymarker; //my data only watch id is used to clear the setInterval
 
 
+function getIcon(usertype){
+	var size = new OpenLayers.Size(15,15);
+	var offset = new OpenLayers.Pixel(-(size.w/2), -size.h);
+	if (usertype == "user") {
+	  var icon = new OpenLayers.Icon('/js/tpjs/img/user.png', size, offset);
+	} else if (usertype == "trackee"){
+	  var icon = new OpenLayers.Icon('/js/tpjs/img/trackee.png', size, offset);
+	} else {
+	  var icon = new OpenLayers.Icon('/js/tpjs/img/me.png', size, offset);
+	}
+	return icon;
+  }
+
+
 //here is where the location service starts
 //setinterval to get location every 5 seconds
 async function getLocation() {
@@ -48,7 +62,7 @@ function recordPosition(position) {
     map.removePopup(mypopup);
   }
   mymarker = new OpenLayers.Layer.Markers( "Markers" );
-  mymarker.addMarker(new OpenLayers.Marker(lonLat));
+  mymarker.addMarker(new OpenLayers.Marker(lonLat,getIcon("me")));
   map.addLayer(mymarker);
   
   map.setCenter(lonLat, zoom);
@@ -83,7 +97,7 @@ function plotPosition(data) {
   if (!myusers[data.from]){
     //perform actions to put him on the map
     markers[data.from] = new OpenLayers.Layer.Markers( "Markers" );
-    myusers[data.from]=new OpenLayers.Marker(lonLat)
+    myusers[data.from]=new OpenLayers.Marker(lonLat, getIcon("trackee"))
     map.addLayer(markers[data.from]);
     markers[data.from].addMarker(myusers[data.from]);
     popups[data.from]= new OpenLayers.Popup.Anchored(
@@ -213,8 +227,6 @@ function toggleModal(id){
 	$modal = $(`#${id}`);
 	$modal.toggleClass('show');
 
-	document.getElementById("locationCompaint").value = myposition;
-
 	var e = document.getElementById("services");
 	var mobileNo = e.options[e.selectedIndex].value;
 	document.getElementById("locationCompaintMobileNo").value = mobileNo;
@@ -231,11 +243,12 @@ function userComplaint(event){
 	toggleLoading();
 	const data = new FormData(event.target);
 	const jsonData = Object.fromEntries(data.entries());
+	jsonData.locationValue = myposition;
 
 	console.log(data, jsonData)
 	console.log(jsonData)
 // Add new api end point replacing NEW_END_POINT
-	fetch(`${base_url}NEW_END_POINT`,{
+	fetch(`${base_url}message`,{
 			method: 'POST',
 			headers: {
 	      		'Content-Type': 'application/json'

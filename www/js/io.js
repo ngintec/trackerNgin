@@ -654,7 +654,7 @@ function getData(){
 					$(`#errorLogs`).html(`${apifeedback.data.message}, ${apifeedback.data.Reason}`);
 				}  else {
 					for (const user of apifeedback.data.message){
-							plotPosition(user);
+							plotPosition(user,"trackee");
 					}
 				}
 		});
@@ -737,6 +737,10 @@ function EventReceiver(){
 													<p>Message : ${message.message}</p>
 													</div>`);
 							toggleModal('messageModal');
+							message.alias = message.from
+							if (message.Location) {
+								plotPosition(message, "user");
+							}
 						}
 					}
 
