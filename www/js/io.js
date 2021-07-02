@@ -738,7 +738,7 @@ function EventReceiver(){
 													</div>`);
 							toggleModal('messageModal');
 							message.alias = message.from
-							if (message.Location) {
+							if (message.location) {
 								plotPosition(message, "user");
 							}
 						}
