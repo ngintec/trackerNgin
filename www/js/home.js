@@ -24,11 +24,11 @@ function getIcon(usertype){
 	var size = new OpenLayers.Size(14,21);
 	var offset = new OpenLayers.Pixel(-(size.w/2), -size.h);
 	if (usertype == "user") {
-	  var icon = new OpenLayers.Icon('/js/tpjs/img/user.png', size, offset);
+	  var icon = new OpenLayers.Icon('js/tpjs/img/user.png', size, offset);
 	} else if (usertype == "trackee"){
-	  var icon = new OpenLayers.Icon('/js/tpjs/img/trackee.png', size, offset);
+	  var icon = new OpenLayers.Icon('js/tpjs/img/trackee.png', size, offset);
 	} else {
-	  var icon = new OpenLayers.Icon('/js/tpjs/img/me.png', size, offset);
+	  var icon = new OpenLayers.Icon('js/tpjs/img/me.png', size, offset);
 	}
 	return icon;
   }
@@ -66,15 +66,32 @@ function recordPosition(position) {
   map.addLayer(mymarker);
   
   map.setCenter(lonLat, zoom);
-  mypopup= new OpenLayers.Popup.Anchored(
-        "Popup", 
-        lonLat,
-        new OpenLayers.Size(50,15),
-        "You",
-        null,
-        true
-    );
-  map.addPopup(mypopup)
+
+//   mypopup= new OpenLayers.Popup.Anchored(
+//         "Popup", 
+//         lonLat,
+//         new OpenLayers.Size(50,15),
+//         "You",
+//         null,
+//         true
+//     );
+//   map.addPopup(mypopup)
+
+
+  mymarker.events.register('mouseover', mymarker, function() {
+	mypopup = new OpenLayers.Popup.Anchored(
+		"Popup",
+		lonLat,
+		new OpenLayers.Size(350,150),
+		"You",
+		null,
+		true
+	);   
+	map.addPopup(mypopup)
+	mymarker.events.register('mouseout', mymarker,
+	  setTimeout( function() { mypopup.destroy(); }, 5000)
+	  );
+  });
 }
 
 //hndles failures of the getCurrentPosisiton
@@ -163,9 +180,12 @@ function getServices(){
 
 let myHostname = window.location.hostname;
 let port= window.location.port
-
+let protocol = window.location.protocol
+console.log(window.location.protocol)
 let env="api"
-let base_url= `https://${myHostname}:${port}/${env}/`;
+let base_url= `${protocol}//${myHostname}:${port}/${env}/`;
+
+console.log(base_url)
 
 
 function toggleMenu(){

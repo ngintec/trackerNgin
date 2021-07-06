@@ -21,11 +21,11 @@ function getIcon(usertype){
   var size = new OpenLayers.Size(14,21);
   var offset = new OpenLayers.Pixel(-(size.w/2), -size.h);
   if (usertype == "user") {
-    var icon = new OpenLayers.Icon('/js/tpjs/img/user.png', size, offset);
+    var icon = new OpenLayers.Icon('js/tpjs/img/user.png', size, offset);
   } else if (usertype == "trackee"){
-    var icon = new OpenLayers.Icon('/js/tpjs/img/trackee.png', size, offset);
+    var icon = new OpenLayers.Icon('js/tpjs/img/trackee.png', size, offset);
   } else {
-    var icon = new OpenLayers.Icon('/js/tpjs/img/me.png', size, offset);
+    var icon = new OpenLayers.Icon('js/tpjs/img/me.png', size, offset);
   }
   return icon;
 }
@@ -65,15 +65,31 @@ function recordPosition(position) {
   map.addLayer(mymarker);
   
   map.setCenter(lonLat, zoom);
-  mypopup= new OpenLayers.Popup.Anchored(
-        "Popup", 
+  // mypopup= new OpenLayers.Popup.Anchored(
+  //       "Popup", 
+  //       lonLat,
+  //       new OpenLayers.Size(50,15),
+  //       "You",
+  //       null,
+  //       true
+  //   );
+  // map.addPopup(mypopup)
+ 
+  mymarker.events.register('mouseover', mymarker, function() {
+    var msg = "<p style=color:blue>You</p>"
+    var popup = new OpenLayers.Popup.Anchored(
+        "Popup",
         lonLat,
-        new OpenLayers.Size(50,15),
-        "You",
+        new OpenLayers.Size(350,150),
+        msg,
         null,
         true
-    );
-  map.addPopup(mypopup)
+    );   
+    map.addPopup(popup);
+    mymarker.events.register('mouseout', mymarker,
+      setTimeout( function() { popup.destroy(); }, 5000)
+      );
+  });
 }
 
 
@@ -140,15 +156,32 @@ function plotPosition(data, usertype) {
     myusers[data.from]=new OpenLayers.Marker(lonLat, getIcon(usertype))
     map.addLayer(markers[data.from]);
     markers[data.from].addMarker(myusers[data.from]);
-    popups[data.from]= new OpenLayers.Popup.Anchored(
-        "Popup", 
-        lonLat,
-        new OpenLayers.Size(75,30),
-        data.alias,
-        null,
-        true
-    );
-    map.addPopup(popups[data.from])
+
+    // popups[data.from]= new OpenLayers.Popup.Anchored(
+    //     "Popup", 
+    //     lonLat,
+    //     new OpenLayers.Size(75,30),
+    //     data.alias,
+    //     null,
+    //     true
+    // );
+    // map.addPopup(popups[data.from])
+
+    mymarker.events.register('mouseover', mymarker, function() {
+      popups[data.from] = new OpenLayers.Popup.Anchored(
+          "Popup",
+          lonLat,
+          new OpenLayers.Size(350,150),
+          data.alias,
+          null,
+          true
+      );   
+      map.addPopup(popups[data.from])
+      mymarker.events.register('mouseout', mymarker,
+        setTimeout( function() { popups[data.from].destroy(); }, 5000)
+        );
+    });
+
   } else {
     //update a phone to alias mapping
     myUserMapping[data.from]=data.alias;
@@ -166,15 +199,31 @@ function plotPosition(data, usertype) {
       myusers[data.from]=new OpenLayers.Marker(lonLat, getIcon(usertype))
       map.addLayer(markers[data.from]);
       markers[data.from].addMarker(myusers[data.from]);
-      popups[data.from]= new OpenLayers.Popup.Anchored(
-          "Popup", 
-          lonLat,
-          new OpenLayers.Size(75,30),
-          data.alias,
-          null,
-          true
-      );
-      map.addPopup(popups[data.from])
+
+      // popups[data.from]= new OpenLayers.Popup.Anchored(
+      //     "Popup", 
+      //     lonLat,
+      //     new OpenLayers.Size(75,30),
+      //     data.alias,
+      //     null,
+      //     true
+      // );
+      // map.addPopup(popups[data.from])
+
+      mymarker.events.register('mouseover', mymarker, function() {
+        popups[data.from] = new OpenLayers.Popup.Anchored(
+            "Popup",
+            lonLat,
+            new OpenLayers.Size(350,150),
+            data.alias,
+            null,
+            true
+        );   
+        map.addPopup(popups[data.from])
+        mymarker.events.register('mouseout', mymarker,
+          setTimeout( function() { popups[data.from].destroy(); }, 5000)
+          );
+      });
     } else {
       try{
             map.removeLayer(markers[data.from]);

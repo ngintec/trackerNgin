@@ -14,9 +14,10 @@ let updateFrequency= 60; //in seconds we update every x miliseconds
 
 let myHostname = window.location.hostname;
 let port= window.location.port
+let protocol = window.location.protocol
 
 let env="api"
-let base_url= `https://${myHostname}:${port}/${env}/`;
+let base_url= `${protocol}//${myHostname}:${port}/${env}/`;
 // Websocket no longer used instead we use REDIS search using API call
 // reduces number of connections to server and saves money 
 // let wss_url= `wss://${myHostname}:${port}/ws${env}`;
