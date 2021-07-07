@@ -9,13 +9,16 @@ https://docs.djangoproject.com/en/3.2/topics/settings/
 For the full list of settings and their values, see
 https://docs.djangoproject.com/en/3.2/ref/settings/
 """
-
+import environ
 from pathlib import Path
 import os
 
+
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
-
+ENV_FILE = Path(__file__).resolve().parent / ".env"
+environ.Env.read_env(env_file=str(ENV_FILE))
+ENV_VAR = environ.Env()
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/3.2/howto/deployment/checklist/
@@ -134,22 +137,17 @@ MEDIA_URL = '/'
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 # Redis config
-REDIS_HOST = os.environ['REDIS_HOST']
-REDIS_PORT = os.environ['REDIS_PORT']
+REDIS_HOST = ENV_VAR('REDIS_HOST')
+REDIS_PORT = ENV_VAR('REDIS_PORT')
 REDIS_USER = "app"
-# REDIS_PASSWORD = "ngin-TEC-123"
-# you can also set export $REDIS_PASSWORD="ngin-TEC-123" and specify
-REDIS_PASSWORD = os.environ['REDIS_PASSWORD']
+REDIS_PASSWORD = ENV_VAR('REDIS_PASSWORD')
 
 # Should you sync with RDBMS
 RDBMS = False
 
 #SMTP
-SMTP_USER = os.environ['SMTP_USER']
-SMTP_PASS = os.environ['SMTP_PASS']
-SMTP_HOST = os.environ['SMTP_HOST']
-SMTP_PORT = os.environ['SMTP_PORT']
+SMTP_USER = ENV_VAR('SMTP_USER')
+SMTP_PASS = ENV_VAR('SMTP_PASS')
+SMTP_HOST = ENV_VAR('SMTP_HOST')
+SMTP_PORT = ENV_VAR('SMTP_PORT')
 
-STATICFILES_DIRS = [os.environ['trackerngin_static']]
-
-print(STATICFILES_DIRS)
