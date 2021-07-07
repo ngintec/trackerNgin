@@ -82,7 +82,7 @@ function recordPosition(position) {
 	mypopup = new OpenLayers.Popup.Anchored(
 		"Popup",
 		lonLat,
-		new OpenLayers.Size(350,150),
+		new OpenLayers.Size(75,30),
 		"You",
 		null,
 		true

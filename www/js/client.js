@@ -76,11 +76,11 @@ function recordPosition(position) {
   // map.addPopup(mypopup)
  
   mymarker.events.register('mouseover', mymarker, function() {
-    var msg = "<p style=color:blue>You</p>"
+    var msg = "You"
     var popup = new OpenLayers.Popup.Anchored(
         "Popup",
         lonLat,
-        new OpenLayers.Size(350,150),
+        new OpenLayers.Size(50,15),
         msg,
         null,
         true
@@ -171,7 +171,7 @@ function plotPosition(data, usertype) {
       popups[data.from] = new OpenLayers.Popup.Anchored(
           "Popup",
           lonLat,
-          new OpenLayers.Size(350,150),
+          new OpenLayers.Size(75,30),
           data.alias,
           null,
           true
@@ -214,7 +214,7 @@ function plotPosition(data, usertype) {
         popups[data.from] = new OpenLayers.Popup.Anchored(
             "Popup",
             lonLat,
-            new OpenLayers.Size(350,150),
+            new OpenLayers.Size(75,30),
             data.alias,
             null,
             true
