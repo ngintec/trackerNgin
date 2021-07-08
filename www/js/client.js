@@ -65,29 +65,20 @@ function recordPosition(position) {
   map.addLayer(mymarker);
   
   map.setCenter(lonLat, zoom);
-  // mypopup= new OpenLayers.Popup.Anchored(
-  //       "Popup", 
-  //       lonLat,
-  //       new OpenLayers.Size(50,15),
-  //       "You",
-  //       null,
-  //       true
-  //   );
-  // map.addPopup(mypopup)
  
   mymarker.events.register('mouseover', mymarker, function() {
     var msg = "You"
     var popup = new OpenLayers.Popup.Anchored(
         "Popup",
         lonLat,
-        new OpenLayers.Size(50,15),
+        new OpenLayers.Size(90,75),
         msg,
         null,
         true
     );   
     map.addPopup(popup);
     mymarker.events.register('mouseout', mymarker,
-      setTimeout( function() { popup.destroy(); }, 5000)
+      setTimeout( function() { popup.destroy(); }, 3000)
       );
   });
 }
@@ -157,28 +148,18 @@ function plotPosition(data, usertype) {
     map.addLayer(markers[data.from]);
     markers[data.from].addMarker(myusers[data.from]);
 
-    // popups[data.from]= new OpenLayers.Popup.Anchored(
-    //     "Popup", 
-    //     lonLat,
-    //     new OpenLayers.Size(75,30),
-    //     data.alias,
-    //     null,
-    //     true
-    // );
-    // map.addPopup(popups[data.from])
-
-    mymarker.events.register('mouseover', mymarker, function() {
+    markers[data.from].events.register('mouseover', markers[data.from], function() {
       popups[data.from] = new OpenLayers.Popup.Anchored(
           "Popup",
           lonLat,
-          new OpenLayers.Size(75,30),
+          new OpenLayers.Size(100,75),
           data.alias,
           null,
           true
       );   
       map.addPopup(popups[data.from])
-      mymarker.events.register('mouseout', mymarker,
-        setTimeout( function() { popups[data.from].destroy(); }, 5000)
+      markers[data.from].events.register('mouseout', markers[data.from],
+        setTimeout( function() { popups[data.from].destroy(); }, 3000)
         );
     });
 
@@ -200,28 +181,18 @@ function plotPosition(data, usertype) {
       map.addLayer(markers[data.from]);
       markers[data.from].addMarker(myusers[data.from]);
 
-      // popups[data.from]= new OpenLayers.Popup.Anchored(
-      //     "Popup", 
-      //     lonLat,
-      //     new OpenLayers.Size(75,30),
-      //     data.alias,
-      //     null,
-      //     true
-      // );
-      // map.addPopup(popups[data.from])
-
-      mymarker.events.register('mouseover', mymarker, function() {
+      markers[data.from].events.register('mouseover', markers[data.from], function() {
         popups[data.from] = new OpenLayers.Popup.Anchored(
             "Popup",
             lonLat,
-            new OpenLayers.Size(75,30),
+            new OpenLayers.Size(90,75),
             data.alias,
             null,
             true
         );   
         map.addPopup(popups[data.from])
-        mymarker.events.register('mouseout', mymarker,
-          setTimeout( function() { popups[data.from].destroy(); }, 5000)
+        markers[data.from].events.register('mouseout', markers[data.from],
+          setTimeout( function() { popups[data.from].destroy(); }, 3000)
           );
       });
     } else {

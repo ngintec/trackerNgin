@@ -67,17 +67,6 @@ function recordPosition(position) {
   
   map.setCenter(lonLat, zoom);
 
-//   mypopup= new OpenLayers.Popup.Anchored(
-//         "Popup", 
-//         lonLat,
-//         new OpenLayers.Size(50,15),
-//         "You",
-//         null,
-//         true
-//     );
-//   map.addPopup(mypopup)
-
-
   mymarker.events.register('mouseover', mymarker, function() {
 	mypopup = new OpenLayers.Popup.Anchored(
 		"Popup",
@@ -89,7 +78,7 @@ function recordPosition(position) {
 	);   
 	map.addPopup(mypopup)
 	mymarker.events.register('mouseout', mymarker,
-	  setTimeout( function() { mypopup.destroy(); }, 5000)
+	  setTimeout( function() { mypopup.destroy(); }, 3000)
 	  );
   });
 }
@@ -117,15 +106,22 @@ function plotPosition(data) {
     myusers[data.from]=new OpenLayers.Marker(lonLat, getIcon("trackee"))
     map.addLayer(markers[data.from]);
     markers[data.from].addMarker(myusers[data.from]);
-    popups[data.from]= new OpenLayers.Popup.Anchored(
-        "Popup", 
-        lonLat,
-        new OpenLayers.Size(50,15),
-        data.alias,
-        null,
-        true
-    );
-    map.addPopup(popups[data.from])
+    
+	markers[data.from].events.register('mouseover', markers[data.from], function() {
+		popups[data.from]= new OpenLayers.Popup.Anchored(
+			"Popup", 
+			lonLat,
+			new OpenLayers.Size(90,75),
+			data.alias,
+			null,
+			true
+		);  
+		map.addPopup(popups[data.from])
+		markers[data.from].events.register('mouseout', markers[data.from],
+		  setTimeout( function() { popups[data.from].destroy(); }, 3000)
+		  );
+	  });
+
   } else {
     //if its an old user check if he is enabled and then only plot his position;
       //clearmarker
@@ -134,15 +130,22 @@ function plotPosition(data) {
       map.removePopup(popups[data.from]);
       //redraw
       markers[data.from].addMarker(myusers[data.from]);
-      popups[data.from]= new OpenLayers.Popup.Anchored(
-          "Popup", 
-          lonLat,
-          new OpenLayers.Size(50,15),
-          data.alias,
-          null,
-          true
-      );
-      map.addPopup(popups[data.from])
+
+	  markers[data.from].events.register('mouseover', markers[data.from], function() {
+		popups[data.from]= new OpenLayers.Popup.Anchored(
+			"Popup", 
+			lonLat,
+			new OpenLayers.Size(90,75),
+			data.alias,
+			null,
+			true
+		);  
+		map.addPopup(popups[data.from])
+		markers[data.from].events.register('mouseout', markers[data.from],
+		  setTimeout( function() { popups[data.from].destroy(); }, 3000)
+		  );
+	  });
+	
     // not enabled users are already filtered in the filtering event;
   }
 }
